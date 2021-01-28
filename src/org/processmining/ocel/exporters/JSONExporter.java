@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.Date;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
@@ -148,7 +149,13 @@ public class JSONExporter {
 			}
 			JSONObject vmap = new JSONObject();
 			for (String att : event.attributes.keySet()) {
-				vmap.put(att, event.attributes.get(att));
+				Object value = event.attributes.get(att);
+				if (value.getClass() == java.util.Date.class) {
+					vmap.put(att, ((Date)value).toInstant().toString());
+				}
+				else {
+					vmap.put(att, value);
+				}
 			}
 			jsonEvent.put("ocel:omap", omap);
 			jsonEvent.put("ocel:vmap", vmap);
@@ -165,7 +172,13 @@ public class JSONExporter {
 			jsonObject.put("ocel:type", object.objectType.name);
 			JSONObject ovmap = new JSONObject();
 			for (String att : object.attributes.keySet()) {
-				ovmap.put(att, object.attributes.get(att));
+				Object value = object.attributes.get(att);
+				if (value.getClass() == java.util.Date.class) {
+					ovmap.put(att, ((Date)value).toInstant().toString());
+				}
+				else {
+					ovmap.put(att, value);
+				}
 			}
 			jsonObject.put("ocel:ovmap", ovmap);
 			objects.put(objectId, jsonObject);

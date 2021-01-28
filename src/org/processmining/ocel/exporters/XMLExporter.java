@@ -121,7 +121,7 @@ public class XMLExporter {
 			Object attributeValue = this.eventLog.globalEvent.get(attribute);
 			String[] typeString = TypeFromValue.getTypeStringForValue(attributeValue);
 			Element xmlAttribute = new Element(typeString[0]);
-			xmlAttribute.setAttribute("id", attribute);
+			xmlAttribute.setAttribute("key", attribute);
 			xmlAttribute.setAttribute("value", typeString[1]);
 			globalEvent.addContent(xmlAttribute);
 		}
@@ -135,7 +135,7 @@ public class XMLExporter {
 			Object attributeValue = this.eventLog.globalObject.get(attribute);
 			String[] typeString = TypeFromValue.getTypeStringForValue(attributeValue);
 			Element xmlAttribute = new Element(typeString[0]);
-			xmlAttribute.setAttribute("id", attribute);
+			xmlAttribute.setAttribute("key", attribute);
 			xmlAttribute.setAttribute("value", typeString[1]);
 			globalObject.addContent(xmlAttribute);
 		}
@@ -153,7 +153,7 @@ public class XMLExporter {
 		ordering.setAttribute("key", "ordering");
 		ordering.setAttribute("value", (String)this.eventLog.globalLog.get("ocel:ordering"));
 		globalLog.addContent(ordering);
-		Element attributeNames = new Element("string");
+		Element attributeNames = new Element("list");
 		attributeNames.setAttribute("key", "attribute-names");
 		globalLog.addContent(attributeNames);
 		Set<String> ocelAttributeNames = ((Set<String>)this.eventLog.globalLog.get("ocel:attribute-names"));
@@ -163,7 +163,7 @@ public class XMLExporter {
 			attribute.setAttribute("value", attributeName);
 			attributeNames.addContent(attribute);
 		}
-		Element objectTypes = new Element("string");
+		Element objectTypes = new Element("list");
 		objectTypes.setAttribute("key", "object-types");
 		globalLog.addContent(objectTypes);
 		Set<String> ocelObjectTypes = ((Set<String>)this.eventLog.globalLog.get("ocel:object-types"));
@@ -209,7 +209,7 @@ public class XMLExporter {
 				Object attributeValue = ocelEvent.attributes.get(attribute);
 				String[] typeString = TypeFromValue.getTypeStringForValue(attributeValue);
 				Element xmlObj = new Element(typeString[0]);
-				xmlObj.setAttribute("id", attribute);
+				xmlObj.setAttribute("key", attribute);
 				xmlObj.setAttribute("value", typeString[1]);
 				eventVmap.addContent(xmlObj);
 			}
@@ -236,7 +236,7 @@ public class XMLExporter {
 			objectId.setAttribute("key", "id");
 			Element objectType = new Element("string");
 			objectType.setAttribute("key", "type");
-			Element objectVmap = new Element("string");
+			Element objectVmap = new Element("list");
 			objectVmap.setAttribute("key", "ovmap");
 			
 			objectId.setAttribute("value", ocelObject.id);
@@ -246,7 +246,7 @@ public class XMLExporter {
 				Object attributeValue = ocelObject.attributes.get(attribute);
 				String[] typeString = TypeFromValue.getTypeStringForValue(attributeValue);
 				Element xmlObj = new Element(typeString[0]);
-				xmlObj.setAttribute("id", attribute);
+				xmlObj.setAttribute("key", attribute);
 				xmlObj.setAttribute("value", typeString[1]);
 				objectVmap.addContent(xmlObj);
 			}
