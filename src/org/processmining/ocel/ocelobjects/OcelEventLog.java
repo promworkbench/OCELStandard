@@ -3,6 +3,7 @@ package org.processmining.ocel.ocelobjects;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class OcelEventLog {
 	public Map<String, OcelEvent> events;
@@ -32,5 +33,33 @@ public class OcelEventLog {
 		for (String obj : this.objects.keySet()) {
 			this.objects.get(obj).register();
 		}
+	}
+	
+	public Map<String, OcelEvent> getEvents() {
+		return this.events;
+	}
+	
+	public Map<String, OcelObject> getObjects() {
+		return this.objects;
+	}
+	
+	public Set<String> getAttributeNames() {
+		return (Set<String>)this.globalLog.get("ocel:attribute-names");
+	}
+	
+	public Set<String> getObjectTypes() {
+		return (Set<String>)this.globalLog.get("ocel:object-types");
+	}
+	
+	public String getVersion() {
+		return (String)this.globalLog.get("ocel:version");
+	}
+	
+	public Map<String, Object> getGlobalEvent() {
+		return this.globalEvent;
+	}
+	
+	public Map<String, Object> getGlobalObject() {
+		return this.globalObject;
 	}
 }
