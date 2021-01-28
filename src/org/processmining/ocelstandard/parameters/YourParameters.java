@@ -1,8 +1,8 @@
-package org.processmining.newpackageivy.parameters;
+package org.processmining.ocelstandard.parameters;
 
 import org.processmining.basicutils.parameters.impl.PluginParametersImpl;
-import org.processmining.newpackageivy.models.YourFirstInput;
-import org.processmining.newpackageivy.models.YourSecondInput;
+import org.processmining.ocelstandard.models.YourFirstInput;
+import org.processmining.ocelstandard.models.YourSecondInput;
 
 public class YourParameters extends PluginParametersImpl {
 
