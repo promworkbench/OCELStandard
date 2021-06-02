@@ -24,6 +24,6 @@ public class ModelEdge {
 	}
 	
 	public String toString() {
-		return this.sourceActivity + "->" + this.targetActivity+" (EC="+realizations.size()+")";
+		return this.sourceActivity + "->" + this.targetActivity+" ("+objectType.name+"; EC="+realizations.size()+")";
 	}
 }

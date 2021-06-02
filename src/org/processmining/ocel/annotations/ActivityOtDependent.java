@@ -84,8 +84,22 @@ public class ActivityOtDependent {
 					numRelatedObjectsOt++;
 				}
 			}
-			this.maxRelatedObjects = Integer.max(numRelatedObjectsOt, this.maxRelatedObjects);
-			this.minRelatedObjects = Integer.min(numRelatedObjectsOt, this.minRelatedObjects);
+			if (numRelatedObjectsOt > 0) {
+				this.maxRelatedObjects = Integer.max(numRelatedObjectsOt, this.maxRelatedObjects);
+				this.minRelatedObjects = Integer.min(numRelatedObjectsOt, this.minRelatedObjects);
+			}
 		}
+	}
+	
+	public String toString() {
+		StringBuilder ret = new StringBuilder();
+		ret.append(String.format("%s (%s)\n", this.activity, this.objectType.name));
+		ret.append("\n");
+		ret.append(String.format("events = %d\n", this.numEvents));
+		ret.append(String.format("unique objects = %d\n", this.numUniqueObjects));
+		ret.append(String.format("total objects = %d\n", this.numTotalObjects));
+		ret.append(String.format("min rel. obj = %d\n", this.minRelatedObjects));
+		ret.append(String.format("max rel. obj = %d\n", this.maxRelatedObjects));
+		return ret.toString();
 	}
 }

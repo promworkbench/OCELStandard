@@ -56,4 +56,26 @@ public class ActivityOtIndipendent {
 			}
 		}
 	}
+	
+	public String toString() {
+		StringBuilder ret = new StringBuilder();
+		ret.append(String.format("%s\n\n", this.activity));
+		ret.append(String.format("events = %d\n", this.numEvents));
+		ret.append(String.format("unique objects = %d\n", this.numUniqueObjects));
+		ret.append(String.format("total objects = %d\n", this.numTotalObjects));
+		return ret.toString();
+	}
+	
+	public String toReducedString(int idx) {
+		if (idx == 0) {
+			return String.format("E=%d", this.numEvents);
+		}
+		else if (idx == 1) {
+			return String.format("UO=%d", this.numUniqueObjects);
+		}
+		else if (idx == 2) {
+			return String.format("TO=%d", this.numTotalObjects);
+		}
+		return "";
+	}
 }
