@@ -17,6 +17,8 @@ public class AnnotatedModel {
 	public Map<String, ActivityOtIndipendent> indipendentNodeMeasures;
 	public Map<String, Map<String, ActivityOtDependent>> dependentNodeMeasures;
 	public Map<ModelEdge, EdgesMeasures> edgesMeasures;
+	public Map<OcelObjectType, Map<String, Integer>> startActivities;
+	public Map<OcelObjectType, Map<String, Integer>> endActivities;
 	
 	public AnnotatedModel() {
 	}
@@ -29,6 +31,8 @@ public class AnnotatedModel {
 		this.calculateIndipendent();
 		this.calculateDependent();
 		this.calculateEdgesMeasures();
+		this.calculateStartActivities();
+		this.calculateEndActivities();
 	}
 	
 	public void calculateIndipendent() {
@@ -65,5 +69,21 @@ public class AnnotatedModel {
 			//System.out.println(this.edgesMeasures.get(edge).toReducedString(0));
 			//System.out.println(this.edgesMeasures.get(edge).toReducedString(1));
 		}
+	}
+	
+	public void calculateStartActivities() {
+		this.startActivities = new HashMap<OcelObjectType, Map<String, Integer>>();
+		for (OcelObjectType type : ocel.objectTypes.values()) {
+			this.startActivities.put(type, new ModelStartActivities(ocel, type).startActivities);
+		}
+		System.out.print(this.startActivities);
+	}
+	
+	public void calculateEndActivities() {
+		this.endActivities = new HashMap<OcelObjectType, Map<String, Integer>>();
+		for (OcelObjectType type : ocel.objectTypes.values()) {
+			this.endActivities.put(type, new ModelEndActivities(ocel, type).endActivities);
+		}
+		System.out.println(this.endActivities);
 	}
 }
