@@ -52,7 +52,7 @@ public class Flattening {
 			XAttribute caseId = new XAttributeLiteralImpl("concept:name", ocelObject.id);
 			traceAttributes.put("concept:name", caseId);
 			XTrace trace = new XTraceImpl(traceAttributes);
-			for (OcelEvent ocelEvent : ocelObject.relatedEvents) {
+			for (OcelEvent ocelEvent : ocelObject.sortedRelatedEvents) {
 				XAttributeMap eventAttributes = new XAttributeMapImpl();
 				XAttribute eventId = new XAttributeLiteralImpl("event_id", ocelEvent.id);
 				eventAttributes.put("event_id", eventId);
