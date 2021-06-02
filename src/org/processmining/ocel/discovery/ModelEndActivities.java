@@ -10,21 +10,24 @@ import org.processmining.ocel.ocelobjects.OcelObjectType;
 public class ModelEndActivities {
 	OcelEventLog ocel;
 	OcelObjectType ot;
-	Map<String, Integer> endActivities;
+	Map<String, Integer> numEvents;
 	
 	public ModelEndActivities(OcelEventLog ocel, OcelObjectType ot) {
 		this.ocel = ocel;
-		this.endActivities = new HashMap<String, Integer>();
+		this.ot = ot;
+		this.numEvents = new HashMap<String, Integer>();
 		this.calculate();
 	}
 	
 	public void calculate() {
 		for (OcelObject obj : ot.objects) {
-			String act = obj.sortedRelatedEvents.get(0).activity;
-			if (!endActivities.containsKey(act)) {
-				endActivities.put(act, 0);
+			if (obj.sortedRelatedEvents.size() > 0) {
+				String act = obj.sortedRelatedEvents.get(obj.sortedRelatedEvents.size() - 1).activity;
+				if (!numEvents.containsKey(act)) {
+					numEvents.put(act, 0);
+				}
+				numEvents.put(act, numEvents.get(act) + 1);
 			}
-			endActivities.put(act, endActivities.get(act) + 1);
 		}
 	}
 }

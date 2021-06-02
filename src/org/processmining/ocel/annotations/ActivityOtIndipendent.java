@@ -68,13 +68,13 @@ public class ActivityOtIndipendent {
 	
 	public String toReducedString(int idx) {
 		if (idx == 0) {
-			return String.format("E=%d", this.numEvents);
+			return String.format("%s (E=%d)", this.activity, this.numEvents);
 		}
 		else if (idx == 1) {
-			return String.format("UO=%d", this.numUniqueObjects);
+			return String.format("%s (UO=%d)", this.activity, this.numUniqueObjects);
 		}
 		else if (idx == 2) {
-			return String.format("TO=%d", this.numTotalObjects);
+			return String.format("%s (TO=%d)", this.activity, this.numTotalObjects);
 		}
 		return "";
 	}
