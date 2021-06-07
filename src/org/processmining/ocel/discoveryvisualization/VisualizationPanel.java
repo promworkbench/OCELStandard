@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
@@ -104,20 +106,80 @@ class ActivityFilteringTab extends JPanel {
 	public String activity;
 	public OcelObjectType objectType;
 	
+	JLabel label;
+	JButton filterRelatedObjectsButton;
+	ActivityFilteringRelatedObjectsMouseListener relatedObjectsListener;
+	
 	public ActivityFilteringTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
 		this.context = context;
 		this.model = model;
 		this.panel = panel;
-		this.activity = "";
+		this.activity = null;
 		this.objectType = null;
+		
+		this.label = new JLabel("Selected activity: ");
+		this.add(label);
+		
+		this.filterRelatedObjectsButton = new JButton("Filter on Related Objects");
+		this.add(this.filterRelatedObjectsButton);
+		
+		this.relatedObjectsListener = new ActivityFilteringRelatedObjectsMouseListener(this);
+		this.filterRelatedObjectsButton.addMouseListener(this.relatedObjectsListener);
 	}
 	
-	public void setActivity(String activity) {
+	public void setActivityAndObjectType(String activity, OcelObjectType objectType) {
 		this.activity = activity;
+		this.objectType = objectType;
+		this.setLabel();
 	}
 	
-	public void setObjectType(OcelObjectType objectType) {
-		this.objectType = objectType;
+	public void setLabel() {
+		if (this.objectType != null) {
+			this.label.setText("Selected activity: "+this.activity+" ("+this.objectType.name+")");
+		}
+		else {
+			this.label.setText("Selected activity: "+this.activity);
+		}
+	}
+}
+
+class ActivityFilteringRelatedObjectsMouseListener implements MouseListener {
+	ActivityFilteringTab aft;
+	
+	public ActivityFilteringRelatedObjectsMouseListener(ActivityFilteringTab aft) {
+		this.aft = aft;
+	}
+	
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if (aft.activity != null) {
+			if (aft.objectType != null) {
+				System.out.println("siiii3 "+aft.activity+" "+aft.objectType.name);
+			}
+			else {
+				System.out.println("siiii "+aft.activity);
+			}
+		}
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -127,14 +189,66 @@ class EdgeFilteringTab extends JPanel {
 	VisualizationPanel panel;
 	ModelEdge edge;
 	
+	JLabel label;
+	JButton filterRelatedObjectsButton;
+	EdgesFilteringRelatedObjectsMouseListener relatedObjectsListener;
+	
 	public EdgeFilteringTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
 		this.context = context;
 		this.model = model;
 		this.panel = panel;
 		this.edge = null;
+		
+		this.label = new JLabel("Selected edge: ");
+		this.add(label);
+		
+		this.filterRelatedObjectsButton = new JButton("Filter on Related Objects");
+		this.add(this.filterRelatedObjectsButton);
+		
+		this.relatedObjectsListener = new EdgesFilteringRelatedObjectsMouseListener(this);
+		this.filterRelatedObjectsButton.addMouseListener(this.relatedObjectsListener);
 	}
 	
 	public void setEdge(ModelEdge edge) {
+		this.edge = edge;
+		this.setLabel();
+	}
+	
+	public void setLabel() {
+		this.label.setText("Selected edge: "+edge.sourceActivity+"->"+edge.targetActivity+" ("+edge.objectType.name+")");
+	}
+}
+
+class EdgesFilteringRelatedObjectsMouseListener implements MouseListener {
+	EdgeFilteringTab eft;
+	
+	public EdgesFilteringRelatedObjectsMouseListener(EdgeFilteringTab eft) {
+		this.eft = eft;
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		ModelEdge edge = this.eft.edge;
+		System.out.println("siii2 "+edge.sourceActivity+"->"+edge.targetActivity+" ("+edge.objectType.name+")");
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 }
@@ -152,9 +266,8 @@ class VisualizationTab extends JPanel {
 	
 	Map<String, Object> activityIndipendent;
 	Map<Object, String> invActivityIndipendent;
-	
-	Map<String, Map<String, Object>> activityOtDependent;
-	
+	Map<Object, ActivityOtDependent> invActivityOtDependent;
+		
 	Map<ModelEdge, Object> edges;
 	Map<Object, ModelEdge> invEdges;
 	
@@ -188,8 +301,8 @@ class VisualizationTab extends JPanel {
 			//this.updateUI();
 		}
 		this.activityIndipendent = new HashMap<String, Object>();
-		this.activityOtDependent = new HashMap<String, Map<String, Object>>();
 		this.invActivityIndipendent = new HashMap<Object, String>();
+		this.invActivityOtDependent = new HashMap<Object, ActivityOtDependent>();
 		this.edges = new HashMap<ModelEdge, Object>();
 		this.invEdges = new HashMap<Object, ModelEdge>();
 		
@@ -238,6 +351,7 @@ class VisualizationTab extends JPanel {
 							String this_color = getColorFromString(detailObj.objectType.name);
 							Object intermediateNode = graph.insertVertex(parent, detailObj.toString(), detailObj.toString(), 150, 150, 275, 250, "fontSize=13;shape="+mxConstants.SHAPE_HEXAGON+";fillColor="+this_color+";fontColor=white");
 							Object arc1 = graph.insertEdge(parent, null, "", intermediateNode, activityObject, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+							this.invActivityOtDependent.put(intermediateNode, detailObj);
 						}
 					}
 				}
@@ -393,6 +507,7 @@ class GraphMouseListener implements MouseListener {
 				this.tab.doRepresentationWork();
 				this.tab.addGraphToView();
 			}
+			this.tab.panel.edgeFilteringTab.setEdge(edge);
 		}
 		else if (this.tab.invActivityIndipendent.containsKey(cell)) {
 			System.out.println("clicked node (indipendent)");
@@ -407,6 +522,12 @@ class GraphMouseListener implements MouseListener {
 				this.tab.doRepresentationWork();
 				this.tab.addGraphToView();
 			}
+			this.tab.panel.activityFilteringTab.setActivityAndObjectType(act, null);
+		}
+		else if (this.tab.invActivityOtDependent.containsKey(cell)) {
+			System.out.println("cliked node (dependent)");
+			ActivityOtDependent actOt = this.tab.invActivityOtDependent.get(cell);
+			this.tab.panel.activityFilteringTab.setActivityAndObjectType(actOt.activity, actOt.objectType);
 		}
 	}
 
