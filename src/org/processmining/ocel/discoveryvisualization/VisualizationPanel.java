@@ -444,8 +444,8 @@ class VisualizationTab extends JPanel {
 		this.scrollPane = new JScrollPane(this.graphComponent);
 		this.scrollPane.setPreferredSize(new Dimension(1824, 826));
 		
-		//this.scrollPane.getViewport().setMinimumSize(new Dimension(160, 200));
-		//this.scrollPane.getViewport().setPreferredSize(new Dimension(160, 200));
+		this.scrollPane.getViewport().setMinimumSize(new Dimension(1824, 826));
+		this.scrollPane.getViewport().setPreferredSize(new Dimension(1824, 826));
 		
 		this.scrollPane.updateUI();
 		this.add(this.scrollPane);
