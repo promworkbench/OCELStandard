@@ -4,9 +4,10 @@ import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.ocel.annotations.ActivityOtIndipendent;
@@ -14,7 +15,11 @@ import org.processmining.ocel.annotations.EdgesMeasures;
 import org.processmining.ocel.discovery.AnnotatedModel;
 import org.processmining.ocel.discovery.ModelEdge;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
+import org.processmining.ocel.ocelobjects.OcelObjectType;
 
+import com.fluxicon.slickerbox.components.NiceDoubleSlider;
+import com.fluxicon.slickerbox.components.NiceSlider.Orientation;
+import com.fluxicon.slickerbox.factory.SlickerFactory;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
@@ -46,18 +51,37 @@ class ControlTab extends JPanel {
 	OcelEventLog ocel;
 	AnnotatedModel model;
 	VisualizationPanel panel;
+	SliderChange sliderChange;
 	
 	public int IDX = 0;
 	public double PERC_ACT = 0.2;
 	public double PERC_EDGES = 0.2;
+	public NiceDoubleSlider actSlider;
+	public NiceDoubleSlider edgesSlider;
+	
+	public Double getPercAct() {
+		return this.actSlider.getValue();
+	}
+	
+	public Double getPercEdges() {
+		return this.edgesSlider.getValue();
+	}
 	
 	public ControlTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
 		this.context = context;
 		this.ocel = ocel;
 		this.model = model;
 		this.panel = panel;
+		this.sliderChange = new SliderChange(context, model, panel);
 		
-		this.add(new JLabel("ciao1"));
+		this.actSlider = SlickerFactory.instance().createNiceDoubleSlider("% Activities", 0.0, 1.0, 0.2, Orientation.HORIZONTAL);
+		this.edgesSlider = SlickerFactory.instance().createNiceDoubleSlider("% Paths", 0.0, 1.0, 0.2, Orientation.HORIZONTAL);
+		
+		this.actSlider.addChangeListener(this.sliderChange);
+		this.edgesSlider.addChangeListener(this.sliderChange);
+		
+		this.add(this.actSlider);
+		this.add(this.edgesSlider);
 	}
 }
 
@@ -108,8 +132,8 @@ class VisualizationTab extends JPanel {
 	public void drawGraph() {
 		Object parent = graph.getDefaultParent();
 		
-		int MIN_ALLOWED_ACT_COUNT = (int)(this.model.MAX_INDIPENDENT_ACT_COUNT * this.controlTab.PERC_ACT);
-		int MIN_ALLOWED_EDGE_COUNT = (int)(this.model.MAX_EDGE_COUNT * this.controlTab.PERC_EDGES);
+		int MIN_ALLOWED_ACT_COUNT = (int)(this.model.MAX_INDIPENDENT_ACT_COUNT * (1.0 - this.controlTab.getPercAct()));
+		int MIN_ALLOWED_EDGE_COUNT = (int)(this.model.MAX_EDGE_COUNT * (1.0 - this.controlTab.getPercEdges()));
 
 		for (String act : model.indipendentNodeMeasures.keySet()) {
 			ActivityOtIndipendent activity = model.indipendentNodeMeasures.get(act);
@@ -134,20 +158,25 @@ class VisualizationTab extends JPanel {
 				}
 			}
 		}
+		
+		for (OcelObjectType ot : model.startActivities.keySet()) {
+			boolean is_ok = false;
+			for (String act : model.startActivities.get(ot).endpoints.keySet()) {
+				if (activityIndipendent.containsKey(act)) {
+					is_ok = true;
+				}
+			}
+			if (is_ok) {
+				//Object saNode = graph.insertVertex(parent, "", "", 150, 150, 275, 60, "");
+			}
+		}
 	}
 	
 	public void doLayouting() {
 		mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
 
-		while (true) {
-			try {
-				layout.execute(graph.getDefaultParent());
-				break;
-			}
-			catch (Exception ex) {
-				System.out.println("exception");
-			}
-		}
+		layout.execute(graph.getDefaultParent());
+
 		this.graph.getModel().endUpdate();
 	}
 	
@@ -163,5 +192,24 @@ class VisualizationTab extends JPanel {
 		this.scrollPane.updateUI();
 		this.add(this.scrollPane);
 		this.updateUI();
+	}
+}
+
+class SliderChange implements ChangeListener {
+	PluginContext context;
+	VisualizationPanel panel;
+	AnnotatedModel model;
+	
+	public SliderChange(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
+		this.context = context;
+		this.model = model;
+		this.panel = panel;
+	}
+	
+	public void stateChanged(ChangeEvent e) {
+		// TODO Auto-generated method stub
+		System.out.println("CIAOOOOO");
+		this.panel.visualizationTab.doRepresentationWork();
+		this.panel.visualizationTab.addGraphToView();
 	}
 }

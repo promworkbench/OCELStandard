@@ -10,7 +10,7 @@ import org.processmining.ocel.ocelobjects.OcelObjectType;
 public class ModelStartActivities {
 	OcelEventLog ocel;
 	OcelObjectType ot;
-	Map<String, Endpoint> endpoints;
+	public Map<String, Endpoint> endpoints;
 	int maxEndpoint;
 	
 	public ModelStartActivities(OcelEventLog ocel, OcelObjectType ot) {
