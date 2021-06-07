@@ -93,7 +93,7 @@ public class ActivityOtDependent {
 	
 	public String toString() {
 		StringBuilder ret = new StringBuilder();
-		ret.append(String.format("%s (%s)\n", this.activity, this.objectType.name));
+		ret.append(String.format("%s\n(%s)\n", this.activity, this.objectType.name));
 		ret.append("\n");
 		ret.append(String.format("events = %d\n", this.numEvents));
 		ret.append(String.format("unique objects = %d\n", this.numUniqueObjects));
@@ -101,5 +101,22 @@ public class ActivityOtDependent {
 		ret.append(String.format("min rel. obj = %d\n", this.minRelatedObjects));
 		ret.append(String.format("max rel. obj = %d\n", this.maxRelatedObjects));
 		return ret.toString();
+	}
+	
+	public int getValue(int idx) {
+		if (idx == 0) {
+			return this.numEvents;
+		}
+		else if (idx == 1) {
+			return this.numUniqueObjects;
+		}
+		else if (idx == 2) {
+			return this.numTotalObjects;
+		}
+		return 0;
+	}
+	
+	public boolean satisfy(int idx, int count) {
+		return this.getValue(idx) >= count;
 	}
 }

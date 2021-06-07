@@ -14,6 +14,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.processmining.framework.plugin.PluginContext;
+import org.processmining.ocel.annotations.ActivityOtDependent;
 import org.processmining.ocel.annotations.ActivityOtIndipendent;
 import org.processmining.ocel.annotations.EdgesMeasures;
 import org.processmining.ocel.discovery.AnnotatedModel;
@@ -104,8 +105,9 @@ class VisualizationTab extends JPanel {
 	JScrollPane scrollPane;
 	
 	Map<String, Object> activityIndipendent;
-	Map<String, Map<String, Object>> activityOtIndipendent;
 	Map<Object, String> invActivityIndipendent;
+	
+	Map<String, Map<String, Object>> activityOtDependent;
 	
 	Map<ModelEdge, Object> edges;
 	Map<Object, ModelEdge> invEdges;
@@ -141,7 +143,7 @@ class VisualizationTab extends JPanel {
 			//this.updateUI();
 		}
 		this.activityIndipendent = new HashMap<String, Object>();
-		this.activityOtIndipendent = new HashMap<String, Map<String, Object>>();
+		this.activityOtDependent = new HashMap<String, Map<String, Object>>();
 		this.invActivityIndipendent = new HashMap<Object, String>();
 		this.edges = new HashMap<ModelEdge, Object>();
 		this.invEdges = new HashMap<Object, ModelEdge>();
@@ -183,6 +185,17 @@ class VisualizationTab extends JPanel {
 				Object activityObject = graph.insertVertex(parent, activity.activity, label, 150, 150, width, height, "fontSize=18");
 				activityIndipendent.put(activity.activity, activityObject);
 				invActivityIndipendent.put(activityObject, activity.activity);
+				
+				if (this.expandedActivities.contains(act)) {
+					for (String ot : this.model.dependentNodeMeasures.get(act).keySet()) {
+						ActivityOtDependent detailObj = this.model.dependentNodeMeasures.get(act).get(ot);
+						if (detailObj.satisfy(this.controlTab.IDX, MIN_ALLOWED_ACT_COUNT)) {
+							String this_color = getColorFromString(detailObj.objectType.name);
+							Object intermediateNode = graph.insertVertex(parent, detailObj.toString(), detailObj.toString(), 150, 150, 275, 250, "fontSize=13;shape="+mxConstants.SHAPE_HEXAGON+";fillColor="+this_color+";fontColor=white");
+							Object arc1 = graph.insertEdge(parent, null, "", intermediateNode, activityObject, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+						}
+					}
+				}
 			}
 		}
 		
