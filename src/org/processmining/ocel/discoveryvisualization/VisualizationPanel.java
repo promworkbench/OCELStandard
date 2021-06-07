@@ -13,6 +13,7 @@ import org.processmining.framework.plugin.PluginContext;
 import org.processmining.ocel.annotations.ActivityOtIndipendent;
 import org.processmining.ocel.annotations.EdgesMeasures;
 import org.processmining.ocel.discovery.AnnotatedModel;
+import org.processmining.ocel.discovery.Endpoint;
 import org.processmining.ocel.discovery.ModelEdge;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 import org.processmining.ocel.ocelobjects.OcelObjectType;
@@ -129,6 +130,14 @@ class VisualizationTab extends JPanel {
 		graph.getModel().beginUpdate();
 	}
 	
+	public String getColorFromString(String orig) {
+		return String.format("#%X", orig.hashCode());
+	}
+	
+	public String getOppositeColorFromString(String orig) {
+		return String.format("#%X", -orig.hashCode());
+	}
+	
 	public void drawGraph() {
 		Object parent = graph.getDefaultParent();
 		
@@ -138,7 +147,7 @@ class VisualizationTab extends JPanel {
 		for (String act : model.indipendentNodeMeasures.keySet()) {
 			ActivityOtIndipendent activity = model.indipendentNodeMeasures.get(act);
 			if (activity.satisfy(this.controlTab.IDX, MIN_ALLOWED_ACT_COUNT)) {
-				Object activityObject = graph.insertVertex(parent, activity.toReducedString(this.controlTab.IDX), activity.toReducedString(this.controlTab.IDX), 150, 150, 275, 60, "fontSize=18");
+				Object activityObject = graph.insertVertex(parent, activity.activity, activity.toReducedString(this.controlTab.IDX), 150, 150, 275, 60, "fontSize=18");
 				activityIndipendent.put(activity.activity, activityObject);
 			}
 		}
@@ -153,8 +162,9 @@ class VisualizationTab extends JPanel {
 				if (edgeMeasure.satisfy(this.controlTab.IDX, MIN_ALLOWED_EDGE_COUNT)) {
 					Object obj1 = activityIndipendent.get(act1);
 					Object obj2 = activityIndipendent.get(act2);
+					String this_color = getColorFromString(edge.objectType.name);
 					
-					Object arc = graph.insertEdge(parent, null, edgeMeasure.toReducedString(this.controlTab.IDX), obj1, obj2, "fontSize=16");
+					Object arc = graph.insertEdge(parent, null, edgeMeasure.toReducedString(this.controlTab.IDX), obj1, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
 				}
 			}
 		}
@@ -167,7 +177,38 @@ class VisualizationTab extends JPanel {
 				}
 			}
 			if (is_ok) {
-				//Object saNode = graph.insertVertex(parent, "", "", 150, 150, 275, 60, "");
+				String this_color = getColorFromString(ot.name);
+				Object saNode = graph.insertVertex(parent, "", ot.name, 150, 150, 275, 60, "shape=ellipse;fillColor="+this_color+";fontColor=white");
+				for (String act : model.startActivities.get(ot).endpoints.keySet()) {
+					if (activityIndipendent.containsKey(act)) {
+						Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
+						Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.controlTab.IDX), saNode, activityIndipendent.get(act), "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+					}
+				}
+			}
+		}
+		
+		for (OcelObjectType ot : model.endActivities.keySet()) {
+			boolean is_ok = false;
+			for (String act : model.endActivities.get(ot).endpoints.keySet()) {
+				if (activityIndipendent.containsKey(act)) {
+					Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
+					if (activity.satisfy(this.controlTab.IDX, MIN_ALLOWED_EDGE_COUNT)) {
+						is_ok = true;
+					}
+				}
+			}
+			if (is_ok) {
+				String this_color = getColorFromString(ot.name);
+				Object eaNode = graph.insertVertex(parent, "", "", 150, 150, 60, 60, "shape=ellipse;fillColor="+this_color);
+				for (String act : model.endActivities.get(ot).endpoints.keySet()) {
+					if (activityIndipendent.containsKey(act)) {
+						Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
+						if (activity.satisfy(this.controlTab.IDX, MIN_ALLOWED_EDGE_COUNT)) {
+							Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.controlTab.IDX), activityIndipendent.get(act), eaNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -208,7 +249,6 @@ class SliderChange implements ChangeListener {
 	
 	public void stateChanged(ChangeEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("CIAOOOOO");
 		this.panel.visualizationTab.doRepresentationWork();
 		this.panel.visualizationTab.addGraphToView();
 	}
