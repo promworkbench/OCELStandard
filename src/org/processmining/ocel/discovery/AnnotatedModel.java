@@ -19,6 +19,10 @@ public class AnnotatedModel {
 	public Map<ModelEdge, EdgesMeasures> edgesMeasures;
 	public Map<OcelObjectType, ModelStartActivities> startActivities;
 	public Map<OcelObjectType, ModelEndActivities> endActivities;
+	public int MIN_INDIPENDENT_ACT_COUNT;
+	public int MAX_INDIPENDENT_ACT_COUNT;
+	public int MIN_EDGE_COUNT;
+	public int MAX_EDGE_COUNT;
 	
 	public AnnotatedModel() {
 	}
@@ -33,6 +37,7 @@ public class AnnotatedModel {
 		this.calculateEdgesMeasures();
 		this.calculateStartActivities();
 		this.calculateEndActivities();
+		this.calculateExtremes(0);
 	}
 	
 	public void calculateIndipendent() {
@@ -75,6 +80,23 @@ public class AnnotatedModel {
 		this.endActivities = new HashMap<OcelObjectType, ModelEndActivities>();
 		for (OcelObjectType type : ocel.objectTypes.values()) {
 			this.endActivities.put(type, new ModelEndActivities(ocel, type));
+		}
+	}
+	
+	public void calculateExtremes(int idx) {
+		this.MIN_INDIPENDENT_ACT_COUNT = Integer.MAX_VALUE;
+		this.MAX_INDIPENDENT_ACT_COUNT = 0;
+		this.MIN_EDGE_COUNT = Integer.MAX_VALUE;
+		this.MAX_EDGE_COUNT = 0;
+		for (ActivityOtIndipendent meas : indipendentNodeMeasures.values()) {
+			int thisCount = meas.getValue(idx);
+			this.MIN_INDIPENDENT_ACT_COUNT = Math.min(this.MIN_INDIPENDENT_ACT_COUNT, thisCount);
+			this.MAX_INDIPENDENT_ACT_COUNT = Math.max(this.MAX_INDIPENDENT_ACT_COUNT, thisCount);
+		}
+		for (EdgesMeasures edge : edgesMeasures.values()) {
+			int thisCount = edge.getValue(idx);
+			this.MIN_EDGE_COUNT = Math.min(this.MIN_EDGE_COUNT, thisCount);
+			this.MAX_EDGE_COUNT = Math.max(this.MAX_EDGE_COUNT, thisCount);
 		}
 	}
 }

@@ -99,15 +99,19 @@ public class EdgesMeasures {
 	}
 	
 	public boolean satisfy(int idx, int count) {
+		return this.getValue(idx) >= count;
+	}
+	
+	public int getValue(int idx) {
 		if (idx == 0) {
-			return this.eventCouples >= count;
+			return this.eventCouples;
 		}
 		else if (idx == 1) {
-			return this.uniqueObjects >= count;
+			return this.uniqueObjects;
 		}
 		else if (idx == 2) {
-			return this.totalObjects >= count;
+			return this.totalObjects;
 		}
-		return false;
+		return 0;
 	}
 }

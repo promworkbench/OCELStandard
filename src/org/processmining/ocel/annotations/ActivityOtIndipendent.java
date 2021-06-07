@@ -80,15 +80,19 @@ public class ActivityOtIndipendent {
 	}
 	
 	public boolean satisfy(int idx, int count) {
+		return this.getValue(idx) >= count;
+	}
+	
+	public int getValue(int idx) {
 		if (idx == 0) {
-			return this.numEvents >= count;
+			return this.numEvents;
 		}
 		else if (idx == 1) {
-			return this.numUniqueObjects >= count;
+			return this.numUniqueObjects;
 		}
 		else if (idx == 2) {
-			return this.numTotalObjects >= count;
+			return this.numTotalObjects;
 		}
-		return false;
+		return 0;
 	}
 }
