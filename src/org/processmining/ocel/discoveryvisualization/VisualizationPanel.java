@@ -1,8 +1,12 @@
 package org.processmining.ocel.discoveryvisualization;
 
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,6 +27,7 @@ import com.fluxicon.slickerbox.components.NiceSlider.Orientation;
 import com.fluxicon.slickerbox.factory.SlickerFactory;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxConstants;
 import com.mxgraph.view.mxGraph;
 
 
@@ -92,19 +97,31 @@ class VisualizationTab extends JPanel {
 	OcelEventLog ocel;
 	AnnotatedModel model;
 	ControlTab controlTab;
+	GraphMouseListener graphMouseListener;
 	
-	mxGraph graph;
-	mxGraphComponent graphComponent;
+	public mxGraph graph;
+	public mxGraphComponent graphComponent;
 	JScrollPane scrollPane;
 	
 	Map<String, Object> activityIndipendent;
 	Map<String, Map<String, Object>> activityOtIndipendent;
+	Map<Object, String> invActivityIndipendent;
+	
+	Map<ModelEdge, Object> edges;
+	Map<Object, ModelEdge> invEdges;
+	
+	public Set<String> expandedActivities;
+	public Set<ModelEdge> expandedModelEdges;
 
 	public VisualizationTab(PluginContext context, AnnotatedModel model, ControlTab controlTab) {
 		this.context = context;
 		this.ocel = ocel;
 		this.model = model;
 		this.controlTab = controlTab;
+		this.graphMouseListener = new GraphMouseListener(this);
+		
+		this.expandedActivities = new HashSet<String>();
+		this.expandedModelEdges = new HashSet<ModelEdge>();
 		
 		this.doRepresentationWork();
 		this.addGraphToView();
@@ -125,6 +142,9 @@ class VisualizationTab extends JPanel {
 		}
 		this.activityIndipendent = new HashMap<String, Object>();
 		this.activityOtIndipendent = new HashMap<String, Map<String, Object>>();
+		this.invActivityIndipendent = new HashMap<Object, String>();
+		this.edges = new HashMap<ModelEdge, Object>();
+		this.invEdges = new HashMap<Object, ModelEdge>();
 		
 		graph = new mxGraph();
 		graph.getModel().beginUpdate();
@@ -147,8 +167,22 @@ class VisualizationTab extends JPanel {
 		for (String act : model.indipendentNodeMeasures.keySet()) {
 			ActivityOtIndipendent activity = model.indipendentNodeMeasures.get(act);
 			if (activity.satisfy(this.controlTab.IDX, MIN_ALLOWED_ACT_COUNT)) {
-				Object activityObject = graph.insertVertex(parent, activity.activity, activity.toReducedString(this.controlTab.IDX), 150, 150, 275, 60, "fontSize=18");
+				int width;
+				int height;
+				String label;
+				if (this.expandedActivities.contains(act)) {
+					width = 275;
+					height = 250;
+					label = activity.toString();
+				}
+				else {
+					width = 275;
+					height = 60;
+					label = activity.toReducedString(this.controlTab.IDX);
+				}
+				Object activityObject = graph.insertVertex(parent, activity.activity, label, 150, 150, width, height, "fontSize=18");
 				activityIndipendent.put(activity.activity, activityObject);
+				invActivityIndipendent.put(activityObject, activity.activity);
 			}
 		}
 		
@@ -164,7 +198,18 @@ class VisualizationTab extends JPanel {
 					Object obj2 = activityIndipendent.get(act2);
 					String this_color = getColorFromString(edge.objectType.name);
 					
-					Object arc = graph.insertEdge(parent, null, edgeMeasure.toReducedString(this.controlTab.IDX), obj1, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+					if (this.expandedModelEdges.contains(edge)) {
+						Object intermediateNode = graph.insertVertex(parent, "", edgeMeasure.toString(), 150, 150, 275, 250, "fontSize=18;shape="+mxConstants.SHAPE_DOUBLE_ELLIPSE+";fillColor="+this_color+";fontColor=white");
+						Object arc1 = graph.insertEdge(parent, null, "", obj1, intermediateNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+						Object arc2 = graph.insertEdge(parent, null, "", intermediateNode, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+						edges.put(edge, intermediateNode);
+						invEdges.put(intermediateNode, edge);
+					}
+					else {
+						Object arc = graph.insertEdge(parent, null, edgeMeasure.toReducedString(this.controlTab.IDX), obj1, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+						edges.put(edge, arc);
+						invEdges.put(arc, edge);
+					}
 				}
 			}
 		}
@@ -233,6 +278,8 @@ class VisualizationTab extends JPanel {
 		this.scrollPane.updateUI();
 		this.add(this.scrollPane);
 		this.updateUI();
+		
+		this.graphComponent.getGraphControl().addMouseListener(graphMouseListener);
 	}
 }
 
@@ -251,5 +298,67 @@ class SliderChange implements ChangeListener {
 		// TODO Auto-generated method stub
 		this.panel.visualizationTab.doRepresentationWork();
 		this.panel.visualizationTab.addGraphToView();
+	}
+}
+
+class GraphMouseListener implements MouseListener {
+	VisualizationTab tab;
+	
+	public GraphMouseListener(VisualizationTab tab) {
+		this.tab = tab;
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		Object cell = this.tab.graphComponent.getCellAt(e.getX(), e.getY());
+		
+		if (this.tab.invEdges.containsKey(cell)) {
+			System.out.println("clicked edge");
+			ModelEdge edge = this.tab.invEdges.get(cell);
+			if (!this.tab.expandedModelEdges.contains(edge)) {
+				this.tab.expandedModelEdges.add(edge);
+				this.tab.doRepresentationWork();
+				this.tab.addGraphToView();
+			}
+			else {
+				this.tab.expandedModelEdges.remove(edge);
+				this.tab.doRepresentationWork();
+				this.tab.addGraphToView();
+			}
+		}
+		else if (this.tab.invActivityIndipendent.containsKey(cell)) {
+			System.out.println("clicked node (indipendent)");
+			String act = this.tab.invActivityIndipendent.get(cell);
+			if (!this.tab.expandedActivities.contains(act)) {
+				this.tab.expandedActivities.add(act);
+				this.tab.doRepresentationWork();
+				this.tab.addGraphToView();
+			}
+			else {
+				this.tab.expandedActivities.remove(act);
+				this.tab.doRepresentationWork();
+				this.tab.addGraphToView();
+			}
+		}
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

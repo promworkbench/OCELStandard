@@ -19,11 +19,11 @@ public class Endpoint {
 	
 	
 	public String toString() {
-		return String.format("E=%d", this.numEvents);
+		return String.format("UO=%d", this.numEvents);
 	}
 	
 	public String toReducedString(int idx) {
-		return String.format("E=%d", this.numEvents);
+		return String.format("UO=%d", this.numEvents);
 	}
 	
 	public boolean satisfy(int idx, int count) {
