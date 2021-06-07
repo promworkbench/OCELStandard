@@ -20,7 +20,6 @@ import org.processmining.ocel.annotations.EdgesMeasures;
 import org.processmining.ocel.discovery.AnnotatedModel;
 import org.processmining.ocel.discovery.Endpoint;
 import org.processmining.ocel.discovery.ModelEdge;
-import org.processmining.ocel.ocelobjects.OcelEventLog;
 import org.processmining.ocel.ocelobjects.OcelObjectType;
 
 import com.fluxicon.slickerbox.components.NiceDoubleSlider;
@@ -36,6 +35,8 @@ public class VisualizationPanel extends JPanel {
 	PluginContext context;
 	AnnotatedModel model;
 	public ControlTab controlTab;
+	public ActivityFilteringTab activityFilteringTab;
+	public EdgeFilteringTab edgeFilteringTab;
 	public VisualizationTab visualizationTab;
 	
 	public VisualizationPanel(PluginContext context, AnnotatedModel model) {
@@ -46,16 +47,21 @@ public class VisualizationPanel extends JPanel {
 		this.setLayout(rl);
 		
 		controlTab = new ControlTab(context, model, this);
-		this.add(controlTab, new Float(15));
+		this.add(controlTab, new Float(6));
 		
-		visualizationTab = new VisualizationTab(context, model, controlTab);
-		this.add(visualizationTab, new Float(85));
+		activityFilteringTab = new ActivityFilteringTab(context, model, this);
+		this.add(activityFilteringTab, new Float(6));
+		
+		edgeFilteringTab = new EdgeFilteringTab(context, model, this);
+		this.add(edgeFilteringTab, new Float(6));
+		
+		visualizationTab = new VisualizationTab(context, model, this);
+		this.add(visualizationTab, new Float(82));
 	}
 }
 
 class ControlTab extends JPanel {
 	PluginContext context;
-	OcelEventLog ocel;
 	AnnotatedModel model;
 	VisualizationPanel panel;
 	SliderChange sliderChange;
@@ -76,7 +82,6 @@ class ControlTab extends JPanel {
 	
 	public ControlTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
 		this.context = context;
-		this.ocel = ocel;
 		this.model = model;
 		this.panel = panel;
 		this.sliderChange = new SliderChange(context, model, panel);
@@ -92,12 +97,53 @@ class ControlTab extends JPanel {
 	}
 }
 
+class ActivityFilteringTab extends JPanel {
+	PluginContext context;
+	AnnotatedModel model;
+	VisualizationPanel panel;
+	public String activity;
+	public OcelObjectType objectType;
+	
+	public ActivityFilteringTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
+		this.context = context;
+		this.model = model;
+		this.panel = panel;
+		this.activity = "";
+		this.objectType = null;
+	}
+	
+	public void setActivity(String activity) {
+		this.activity = activity;
+	}
+	
+	public void setObjectType(OcelObjectType objectType) {
+		this.objectType = objectType;
+	}
+}
+
+class EdgeFilteringTab extends JPanel {
+	PluginContext context;
+	AnnotatedModel model;
+	VisualizationPanel panel;
+	ModelEdge edge;
+	
+	public EdgeFilteringTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
+		this.context = context;
+		this.model = model;
+		this.panel = panel;
+		this.edge = null;
+	}
+	
+	public void setEdge(ModelEdge edge) {
+		
+	}
+}
+
 
 class VisualizationTab extends JPanel {
 	PluginContext context;
-	OcelEventLog ocel;
 	AnnotatedModel model;
-	ControlTab controlTab;
+	VisualizationPanel panel;
 	GraphMouseListener graphMouseListener;
 	
 	public mxGraph graph;
@@ -115,11 +161,10 @@ class VisualizationTab extends JPanel {
 	public Set<String> expandedActivities;
 	public Set<ModelEdge> expandedModelEdges;
 
-	public VisualizationTab(PluginContext context, AnnotatedModel model, ControlTab controlTab) {
+	public VisualizationTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
 		this.context = context;
-		this.ocel = ocel;
 		this.model = model;
-		this.controlTab = controlTab;
+		this.panel = panel;
 		this.graphMouseListener = new GraphMouseListener(this);
 		
 		this.expandedActivities = new HashSet<String>();
@@ -163,12 +208,12 @@ class VisualizationTab extends JPanel {
 	public void drawGraph() {
 		Object parent = graph.getDefaultParent();
 		
-		int MIN_ALLOWED_ACT_COUNT = (int)(this.model.MAX_INDIPENDENT_ACT_COUNT * (1.0 - this.controlTab.getPercAct()));
-		int MIN_ALLOWED_EDGE_COUNT = (int)(this.model.MAX_EDGE_COUNT * (1.0 - this.controlTab.getPercEdges()));
+		int MIN_ALLOWED_ACT_COUNT = (int)(this.model.MAX_INDIPENDENT_ACT_COUNT * (1.0 - this.panel.controlTab.getPercAct()));
+		int MIN_ALLOWED_EDGE_COUNT = (int)(this.model.MAX_EDGE_COUNT * (1.0 - this.panel.controlTab.getPercEdges()));
 
 		for (String act : model.indipendentNodeMeasures.keySet()) {
 			ActivityOtIndipendent activity = model.indipendentNodeMeasures.get(act);
-			if (activity.satisfy(this.controlTab.IDX, MIN_ALLOWED_ACT_COUNT)) {
+			if (activity.satisfy(this.panel.controlTab.IDX, MIN_ALLOWED_ACT_COUNT)) {
 				int width;
 				int height;
 				String label;
@@ -180,7 +225,7 @@ class VisualizationTab extends JPanel {
 				else {
 					width = 275;
 					height = 60;
-					label = activity.toReducedString(this.controlTab.IDX);
+					label = activity.toReducedString(this.panel.controlTab.IDX);
 				}
 				Object activityObject = graph.insertVertex(parent, activity.activity, label, 150, 150, width, height, "fontSize=18");
 				activityIndipendent.put(activity.activity, activityObject);
@@ -189,7 +234,7 @@ class VisualizationTab extends JPanel {
 				if (this.expandedActivities.contains(act)) {
 					for (String ot : this.model.dependentNodeMeasures.get(act).keySet()) {
 						ActivityOtDependent detailObj = this.model.dependentNodeMeasures.get(act).get(ot);
-						if (detailObj.satisfy(this.controlTab.IDX, MIN_ALLOWED_ACT_COUNT)) {
+						if (detailObj.satisfy(this.panel.controlTab.IDX, MIN_ALLOWED_ACT_COUNT)) {
 							String this_color = getColorFromString(detailObj.objectType.name);
 							Object intermediateNode = graph.insertVertex(parent, detailObj.toString(), detailObj.toString(), 150, 150, 275, 250, "fontSize=13;shape="+mxConstants.SHAPE_HEXAGON+";fillColor="+this_color+";fontColor=white");
 							Object arc1 = graph.insertEdge(parent, null, "", intermediateNode, activityObject, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
@@ -206,7 +251,7 @@ class VisualizationTab extends JPanel {
 			EdgesMeasures edgeMeasure = model.edgesMeasures.get(edge);
 			
 			if (activityIndipendent.containsKey(act1) && activityIndipendent.containsKey(act2)) {
-				if (edgeMeasure.satisfy(this.controlTab.IDX, MIN_ALLOWED_EDGE_COUNT)) {
+				if (edgeMeasure.satisfy(this.panel.controlTab.IDX, MIN_ALLOWED_EDGE_COUNT)) {
 					Object obj1 = activityIndipendent.get(act1);
 					Object obj2 = activityIndipendent.get(act2);
 					String this_color = getColorFromString(edge.objectType.name);
@@ -219,7 +264,7 @@ class VisualizationTab extends JPanel {
 						invEdges.put(intermediateNode, edge);
 					}
 					else {
-						Object arc = graph.insertEdge(parent, null, edgeMeasure.toReducedString(this.controlTab.IDX), obj1, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+						Object arc = graph.insertEdge(parent, null, edgeMeasure.toReducedString(this.panel.controlTab.IDX), obj1, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
 						edges.put(edge, arc);
 						invEdges.put(arc, edge);
 					}
@@ -240,7 +285,7 @@ class VisualizationTab extends JPanel {
 				for (String act : model.startActivities.get(ot).endpoints.keySet()) {
 					if (activityIndipendent.containsKey(act)) {
 						Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
-						Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.controlTab.IDX), saNode, activityIndipendent.get(act), "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+						Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.IDX), saNode, activityIndipendent.get(act), "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
 					}
 				}
 			}
@@ -251,7 +296,7 @@ class VisualizationTab extends JPanel {
 			for (String act : model.endActivities.get(ot).endpoints.keySet()) {
 				if (activityIndipendent.containsKey(act)) {
 					Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
-					if (activity.satisfy(this.controlTab.IDX, MIN_ALLOWED_EDGE_COUNT)) {
+					if (activity.satisfy(this.panel.controlTab.IDX, MIN_ALLOWED_EDGE_COUNT)) {
 						is_ok = true;
 					}
 				}
@@ -262,8 +307,8 @@ class VisualizationTab extends JPanel {
 				for (String act : model.endActivities.get(ot).endpoints.keySet()) {
 					if (activityIndipendent.containsKey(act)) {
 						Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
-						if (activity.satisfy(this.controlTab.IDX, MIN_ALLOWED_EDGE_COUNT)) {
-							Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.controlTab.IDX), activityIndipendent.get(act), eaNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+						if (activity.satisfy(this.panel.controlTab.IDX, MIN_ALLOWED_EDGE_COUNT)) {
+							Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.IDX), activityIndipendent.get(act), eaNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
 						}
 					}
 				}
