@@ -22,24 +22,21 @@ import com.mxgraph.view.mxGraph;
 
 public class VisualizationPanel extends JPanel {
 	PluginContext context;
-	OcelEventLog ocel;
 	AnnotatedModel model;
 	public ControlTab controlTab;
 	public VisualizationTab visualizationTab;
 	
-	public VisualizationPanel(PluginContext context, OcelEventLog ocel) {
-		this.ocel = ocel;
-		this.model = new AnnotatedModel(ocel);
+	public VisualizationPanel(PluginContext context, AnnotatedModel model) {
+		this.model = model;
 		
 		RelativeLayout rl = new RelativeLayout(RelativeLayout.Y_AXIS);
 		rl.setFill( true );
 		this.setLayout(rl);
 		
-		controlTab = new ControlTab(context, ocel, model, this);
+		controlTab = new ControlTab(context, model, this);
 		this.add(controlTab, new Float(15));
 		
-		
-		visualizationTab = new VisualizationTab(context, ocel, model, controlTab);
+		visualizationTab = new VisualizationTab(context, model, controlTab);
 		this.add(visualizationTab, new Float(85));
 	}
 }
@@ -54,7 +51,7 @@ class ControlTab extends JPanel {
 	public double PERC_ACT = 0.2;
 	public double PERC_EDGES = 0.2;
 	
-	public ControlTab(PluginContext context, OcelEventLog ocel, AnnotatedModel model, VisualizationPanel panel) {
+	public ControlTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
 		this.context = context;
 		this.ocel = ocel;
 		this.model = model;
@@ -78,7 +75,7 @@ class VisualizationTab extends JPanel {
 	Map<String, Object> activityIndipendent;
 	Map<String, Map<String, Object>> activityOtIndipendent;
 
-	public VisualizationTab(PluginContext context, OcelEventLog ocel, AnnotatedModel model, ControlTab controlTab) {
+	public VisualizationTab(PluginContext context, AnnotatedModel model, ControlTab controlTab) {
 		this.context = context;
 		this.ocel = ocel;
 		this.model = model;
@@ -158,10 +155,10 @@ class VisualizationTab extends JPanel {
 		this.graphComponent = new mxGraphComponent(this.graph);
 		
 		this.scrollPane = new JScrollPane(this.graphComponent);
-		this.scrollPane.setPreferredSize(new Dimension(800, 800));
+		this.scrollPane.setPreferredSize(new Dimension(1824, 826));
 		
-		this.scrollPane.getViewport().setMinimumSize(new Dimension(160, 200));
-		this.scrollPane.getViewport().setPreferredSize(new Dimension(160, 200));
+		//this.scrollPane.getViewport().setMinimumSize(new Dimension(160, 200));
+		//this.scrollPane.getViewport().setPreferredSize(new Dimension(160, 200));
 		
 		this.scrollPane.updateUI();
 		this.add(this.scrollPane);
