@@ -39,9 +39,6 @@ public class AnnotatedModel {
 		this.indipendentNodeMeasures = new HashMap<String, ActivityOtIndipendent>();
 		for (String activity : this.activities.activities) {
 			this.indipendentNodeMeasures.put(activity, new ActivityOtIndipendent(ocel, activity));
-			//System.out.println(this.indipendentNodeMeasures.get(activity));
-			//System.out.println(this.indipendentNodeMeasures.get(activity).toReducedString(0));
-			//System.out.println(this.indipendentNodeMeasures.get(activity).toReducedString(1));
 		}
 	}
 	
@@ -51,7 +48,6 @@ public class AnnotatedModel {
 			this.dependentNodeMeasures.put(activity, new HashMap<String, ActivityOtDependent>());
 			for (String ot : this.activityOtGroups.activityOtGroups.get(activity)) {
 				this.dependentNodeMeasures.get(activity).put(ot, new ActivityOtDependent(ocel, activity, ot));
-				//System.out.println(this.dependentNodeMeasures.get(activity).get(ot));
 			}
 		}
 	}
@@ -65,9 +61,6 @@ public class AnnotatedModel {
 			ActivityOtDependent sourceStatistics = this.dependentNodeMeasures.get(source).get(ot.name);
 			ActivityOtDependent targetStatistics = this.dependentNodeMeasures.get(target).get(ot.name);
 			this.edgesMeasures.put(edge, new EdgesMeasures(ocel, edge, sourceStatistics, targetStatistics));
-			//System.out.println(this.edgesMeasures.get(edge));
-			//System.out.println(this.edgesMeasures.get(edge).toReducedString(0));
-			//System.out.println(this.edgesMeasures.get(edge).toReducedString(1));
 		}
 	}
 	
@@ -76,7 +69,6 @@ public class AnnotatedModel {
 		for (OcelObjectType type : ocel.objectTypes.values()) {
 			this.startActivities.put(type, new ModelStartActivities(ocel, type));
 		}
-		System.out.println(this.startActivities);
 	}
 	
 	public void calculateEndActivities() {
@@ -84,6 +76,5 @@ public class AnnotatedModel {
 		for (OcelObjectType type : ocel.objectTypes.values()) {
 			this.endActivities.put(type, new ModelEndActivities(ocel, type));
 		}
-		System.out.println(this.endActivities);
 	}
 }

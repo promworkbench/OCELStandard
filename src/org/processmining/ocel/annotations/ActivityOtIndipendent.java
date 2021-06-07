@@ -78,4 +78,17 @@ public class ActivityOtIndipendent {
 		}
 		return "";
 	}
+	
+	public boolean satisfy(int idx, int count) {
+		if (idx == 0) {
+			return this.numEvents >= count;
+		}
+		else if (idx == 1) {
+			return this.numUniqueObjects >= count;
+		}
+		else if (idx == 2) {
+			return this.numTotalObjects >= count;
+		}
+		return false;
+	}
 }

@@ -97,4 +97,17 @@ public class EdgesMeasures {
 		}
 		return "";
 	}
+	
+	public boolean satisfy(int idx, int count) {
+		if (idx == 0) {
+			return this.eventCouples >= count;
+		}
+		else if (idx == 1) {
+			return this.uniqueObjects >= count;
+		}
+		else if (idx == 2) {
+			return this.totalObjects >= count;
+		}
+		return false;
+	}
 }
