@@ -1,15 +1,21 @@
 package org.processmining.ocel.discovery;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.processmining.ocel.annotations.ActivityOtDependent;
 import org.processmining.ocel.annotations.ActivityOtIndipendent;
 import org.processmining.ocel.annotations.EdgesMeasures;
+import org.processmining.ocel.filtering.FilterOnRelatedObjects;
+import org.processmining.ocel.ocelobjects.OcelEvent;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
+import org.processmining.ocel.ocelobjects.OcelObject;
 import org.processmining.ocel.ocelobjects.OcelObjectType;
 
 public class AnnotatedModel {
+	public AnnotatedModel original;
 	public OcelEventLog ocel;
 	public ModelActivities activities;
 	public ModelActivityOtGroups activityOtGroups;
@@ -24,9 +30,6 @@ public class AnnotatedModel {
 	public int MIN_EDGE_COUNT;
 	public int MAX_EDGE_COUNT;
 	
-	public AnnotatedModel() {
-	}
-	
 	public AnnotatedModel(OcelEventLog ocel) {
 		this.ocel = ocel;
 		this.activities = new ModelActivities(ocel);
@@ -38,6 +41,7 @@ public class AnnotatedModel {
 		this.calculateStartActivities();
 		this.calculateEndActivities();
 		this.calculateExtremes(0);
+		this.original = this;
 	}
 	
 	public void calculateIndipendent() {
@@ -98,5 +102,24 @@ public class AnnotatedModel {
 			this.MIN_EDGE_COUNT = Math.min(this.MIN_EDGE_COUNT, thisCount);
 			this.MAX_EDGE_COUNT = Math.max(this.MAX_EDGE_COUNT, thisCount);
 		}
+	}
+	
+	public Set<OcelObject> relatedObjectsActivity(String activity) {
+		Set<OcelObject> relatedObjects = new HashSet<OcelObject>();
+		for (OcelEvent eve : this.ocel.events.values()) {
+			if (eve.activity.equals(activity)) {
+				for (OcelObject obj : eve.relatedObjects) {
+					relatedObjects.add(obj);
+				}
+			}
+		}
+		return relatedObjects;
+	}
+	
+	public AnnotatedModel filterOnRelatedObjects(Set<OcelObject> objects) {
+		OcelEventLog filtered = FilterOnRelatedObjects.apply(this.ocel, objects);
+		AnnotatedModel ret = new AnnotatedModel(filtered);
+		ret.original = this.original;
+		return ret;
 	}
 }

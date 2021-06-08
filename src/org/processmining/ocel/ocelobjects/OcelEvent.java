@@ -32,4 +32,13 @@ public class OcelEvent {
 			((Set<String>)this.eventLog.globalLog.get("ocel:attribute-names")).add(att);
 		}
 	}
+	
+	public OcelEvent clone() {
+		OcelEvent newEvent = new OcelEvent(this.eventLog);
+		newEvent.id = this.id;
+		newEvent.activity = this.activity;
+		newEvent.timestamp = this.timestamp;
+		newEvent.attributes = new HashMap<String, Object>(this.attributes);
+		return newEvent;
+	}
 }

@@ -22,6 +22,7 @@ import org.processmining.ocel.annotations.EdgesMeasures;
 import org.processmining.ocel.discovery.AnnotatedModel;
 import org.processmining.ocel.discovery.Endpoint;
 import org.processmining.ocel.discovery.ModelEdge;
+import org.processmining.ocel.ocelobjects.OcelObject;
 import org.processmining.ocel.ocelobjects.OcelObjectType;
 
 import com.fluxicon.slickerbox.components.NiceDoubleSlider;
@@ -60,6 +61,16 @@ public class VisualizationPanel extends JPanel {
 		visualizationTab = new VisualizationTab(context, model, this);
 		this.add(visualizationTab, new Float(82));
 	}
+	
+	public void changeModel(AnnotatedModel model) {
+		this.model = model;
+		this.controlTab.changeModel(model);
+		this.activityFilteringTab.changeModel(model);
+		this.edgeFilteringTab.changeModel(model);
+		this.visualizationTab.changeModel(model);
+		this.visualizationTab.doRepresentationWork();
+		this.visualizationTab.addGraphToView();
+	}
 }
 
 class ControlTab extends JPanel {
@@ -86,7 +97,7 @@ class ControlTab extends JPanel {
 		this.context = context;
 		this.model = model;
 		this.panel = panel;
-		this.sliderChange = new SliderChange(context, model, panel);
+		this.sliderChange = new SliderChange(context, panel);
 		
 		this.actSlider = SlickerFactory.instance().createNiceDoubleSlider("% Activities", 0.0, 1.0, 0.2, Orientation.HORIZONTAL);
 		this.edgesSlider = SlickerFactory.instance().createNiceDoubleSlider("% Paths", 0.0, 1.0, 0.2, Orientation.HORIZONTAL);
@@ -96,6 +107,10 @@ class ControlTab extends JPanel {
 		
 		this.add(this.actSlider);
 		this.add(this.edgesSlider);
+	}
+	
+	public void changeModel(AnnotatedModel model) {
+		this.model = model;
 	}
 }
 
@@ -141,6 +156,10 @@ class ActivityFilteringTab extends JPanel {
 			this.label.setText("Selected activity: "+this.activity);
 		}
 	}
+	
+	public void changeModel(AnnotatedModel model) {
+		this.model = model;
+	}
 }
 
 class ActivityFilteringRelatedObjectsMouseListener implements MouseListener {
@@ -167,7 +186,14 @@ class ActivityFilteringRelatedObjectsMouseListener implements MouseListener {
 				System.out.println("siiii3 "+aft.activity+" "+aft.objectType.name);
 			}
 			else {
-				System.out.println("siiii "+aft.activity);
+				Set<OcelObject> relatedObjects = this.aft.model.relatedObjectsActivity(aft.activity);
+				AnnotatedModel filtered = this.aft.model.filterOnRelatedObjects(relatedObjects);
+				System.out.println(this.aft.model.ocel.events.size());
+				System.out.println(this.aft.model.ocel.objects.size());
+				System.out.println("");
+				System.out.println(filtered.ocel.events.size());
+				System.out.println(filtered.ocel.objects.size());
+				this.aft.panel.changeModel(filtered);
 			}
 		}
 	}
@@ -216,6 +242,10 @@ class EdgeFilteringTab extends JPanel {
 	
 	public void setLabel() {
 		this.label.setText("Selected edge: "+edge.sourceActivity+"->"+edge.targetActivity+" ("+edge.objectType.name+")");
+	}
+	
+	public void changeModel(AnnotatedModel model) {
+		this.model = model;
 	}
 }
 
@@ -453,16 +483,18 @@ class VisualizationTab extends JPanel {
 		
 		this.graphComponent.getGraphControl().addMouseListener(graphMouseListener);
 	}
+	
+	public void changeModel(AnnotatedModel model) {
+		this.model = model;
+	}
 }
 
 class SliderChange implements ChangeListener {
 	PluginContext context;
 	VisualizationPanel panel;
-	AnnotatedModel model;
 	
-	public SliderChange(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
+	public SliderChange(PluginContext context, VisualizationPanel panel) {
 		this.context = context;
-		this.model = model;
 		this.panel = panel;
 	}
 	

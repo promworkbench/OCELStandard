@@ -35,6 +35,41 @@ public class OcelEventLog {
 		}
 	}
 	
+	public OcelEventLog cloneEmpty() {
+		OcelEventLog cloned = new OcelEventLog();
+		cloned.globalEvent = new HashMap<String, Object>(this.globalEvent);
+		cloned.globalObject = new HashMap<String, Object>(this.globalObject);
+		cloned.globalLog = new HashMap<String, Object>(this.globalLog);
+		return cloned;
+	}
+	
+	public void cloneEvent(OcelEvent event) {
+		OcelEvent newEvent = event.clone();
+		for (OcelObject obj : event.relatedObjects) {
+			OcelObject newObj = cloneObject(obj);
+			newEvent.relatedObjects.add(newObj);
+			newEvent.relatedObjectsIdentifiers.add(newObj.id);
+			newObj.relatedEvents.add(newEvent);
+		}
+		this.events.put(newEvent.id, newEvent);
+	}
+	
+	public OcelObject cloneObject(OcelObject original) {
+		if (!this.objects.containsKey(original.id)) {
+			OcelObject newObject = new OcelObject(this);
+			newObject.id = original.id;
+			OcelObjectType otype = original.objectType;
+			if (!this.objectTypes.containsKey(otype.name)) {
+				this.objectTypes.put(otype.name, new OcelObjectType(this, otype.name));
+			}
+			newObject.objectType = this.objectTypes.get(otype.name);
+			this.objects.put(newObject.id, newObject);
+		}
+		else {
+		}
+		return this.objects.get(original.id);
+	}
+	
 	public Map<String, OcelEvent> getEvents() {
 		return this.events;
 	}
