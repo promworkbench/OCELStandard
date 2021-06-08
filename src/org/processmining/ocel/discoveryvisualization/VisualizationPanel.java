@@ -84,6 +84,8 @@ class ControlTab extends JPanel {
 	public double PERC_EDGES = 0.2;
 	public NiceDoubleSlider actSlider;
 	public NiceDoubleSlider edgesSlider;
+	JButton resetFilters;
+	ResetFiltersMouseListener resetFiltersMouseListener;
 	
 	public Double getPercAct() {
 		return this.actSlider.getValue();
@@ -107,11 +109,51 @@ class ControlTab extends JPanel {
 		
 		this.add(this.actSlider);
 		this.add(this.edgesSlider);
+		
+		this.resetFilters = new JButton("Reset filters");
+		this.add(this.resetFilters);
+		
+		this.resetFiltersMouseListener = new ResetFiltersMouseListener(this);
+		this.resetFilters.addMouseListener(this.resetFiltersMouseListener);
 	}
 	
 	public void changeModel(AnnotatedModel model) {
 		this.model = model;
 	}
+}
+
+class ResetFiltersMouseListener implements MouseListener {
+	ControlTab tab;
+	
+	public ResetFiltersMouseListener(ControlTab tab) {
+		this.tab = tab;
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		this.tab.panel.changeModel(this.tab.panel.model.original);
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
 
 class ActivityFilteringTab extends JPanel {
@@ -281,7 +323,6 @@ class EdgesFilteringRelatedObjectsMouseListener implements MouseListener {
 		
 	}
 }
-
 
 class VisualizationTab extends JPanel {
 	PluginContext context;
