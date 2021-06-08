@@ -2,6 +2,7 @@ package org.processmining.ocel.discovery;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -146,6 +147,28 @@ public class AnnotatedModel {
 			}
 		}
 		return relatedObjects;
+	}
+	
+	public Set<OcelObject> objectsHavingStartActivity(String activity, OcelObjectType ot) {
+		Set<OcelObject> satisfyingObjects = new HashSet<OcelObject>();
+		for (OcelObject obj : this.ocel.objects.values()) {
+			List<OcelEvent> evs = obj.sortedRelatedEvents;
+			if (evs.size() > 0 && evs.get(0).activity.equals(activity)) {
+				satisfyingObjects.add(obj);
+			}
+		}
+		return satisfyingObjects;
+	}
+	
+	public Set<OcelObject> objectsHavingEndActivity(String activity, OcelObjectType ot) {
+		Set<OcelObject> satisfyingObjects = new HashSet<OcelObject>();
+		for (OcelObject obj : this.ocel.objects.values()) {
+			List<OcelEvent> evs = obj.sortedRelatedEvents;
+			if (evs.size() > 0 && evs.get(evs.size()-1).activity.equals(activity)) {
+				satisfyingObjects.add(obj);
+			}
+		}
+		return satisfyingObjects;
 	}
 	
 	public AnnotatedModel filterOnRelatedObjects(Set<OcelObject> objects) {

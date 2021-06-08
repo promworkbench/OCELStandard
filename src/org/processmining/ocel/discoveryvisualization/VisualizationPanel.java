@@ -38,6 +38,7 @@ public class VisualizationPanel extends JPanel {
 	PluginContext context;
 	AnnotatedModel model;
 	public ControlTab controlTab;
+	public StatisticsTab statisticsTab;
 	public ActivityFilteringTab activityFilteringTab;
 	public EdgeFilteringTab edgeFilteringTab;
 	public VisualizationTab visualizationTab;
@@ -50,21 +51,25 @@ public class VisualizationPanel extends JPanel {
 		this.setLayout(rl);
 		
 		controlTab = new ControlTab(context, model, this);
-		this.add(controlTab, new Float(6));
+		this.add(controlTab, new Float(5));
+		
+		statisticsTab = new StatisticsTab(context, model, this);
+		this.add(statisticsTab, new Float(5));
 		
 		activityFilteringTab = new ActivityFilteringTab(context, model, this);
-		this.add(activityFilteringTab, new Float(6));
+		this.add(activityFilteringTab, new Float(5));
 		
 		edgeFilteringTab = new EdgeFilteringTab(context, model, this);
-		this.add(edgeFilteringTab, new Float(6));
+		this.add(edgeFilteringTab, new Float(5));
 		
 		visualizationTab = new VisualizationTab(context, model, this);
-		this.add(visualizationTab, new Float(82));
+		this.add(visualizationTab, new Float(80));
 	}
 	
 	public void changeModel(AnnotatedModel model) {
 		this.model = model;
 		this.controlTab.changeModel(model);
+		this.statisticsTab.changeModel(model);
 		this.activityFilteringTab.changeModel(model);
 		this.edgeFilteringTab.changeModel(model);
 		this.visualizationTab.changeModel(model);
@@ -122,6 +127,50 @@ class ControlTab extends JPanel {
 	}
 }
 
+class StatisticsTab extends JPanel {
+	PluginContext context;
+	AnnotatedModel model;
+	VisualizationPanel panel;
+	JLabel noEventsPrefix;
+	JLabel noEvents;
+	JLabel noUniqueObjectsPrefix;
+	JLabel noUniqueObjects;
+	JLabel noObjectTypesPrefix;
+	JLabel noObjectTypes;
+	
+	public StatisticsTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
+		this.context = context;
+		this.model = model;
+		this.panel = panel;
+		this.noEventsPrefix = new JLabel(" Events: ");
+		this.noEvents = new JLabel("0");
+		this.noUniqueObjectsPrefix = new JLabel(" Unique Objects: ");
+		this.noUniqueObjects = new JLabel("0");
+		this.noObjectTypesPrefix = new JLabel(" Object Types: ");
+		this.noObjectTypes = new JLabel("0");
+		
+		this.add(this.noEventsPrefix);
+		this.add(this.noEvents);
+		this.add(this.noUniqueObjectsPrefix);
+		this.add(this.noUniqueObjects);
+		this.add(this.noObjectTypesPrefix);
+		this.add(this.noObjectTypes);
+		
+		this.fillStatistics();
+	}
+	
+	public void fillStatistics() {
+		this.noEvents.setText(String.format("%d", this.model.ocel.events.size()));
+		this.noUniqueObjects.setText(String.format("%d", this.model.ocel.objects.size()));
+		this.noObjectTypes.setText(String.format("%d", this.model.ocel.objectTypes.size()));
+	}
+	
+	public void changeModel(AnnotatedModel model) {
+		this.model = model;
+		this.fillStatistics();
+	}
+}
+
 class ResetFiltersMouseListener implements MouseListener {
 	ControlTab tab;
 	
@@ -167,6 +216,12 @@ class ActivityFilteringTab extends JPanel {
 	JButton filterRelatedObjectsButton;
 	ActivityFilteringRelatedObjectsMouseListener relatedObjectsListener;
 	
+	JButton startActivitiesFilter;
+	JButton endActivitiesFilter;
+	
+	StartActivitiesFilterMouseListener startActivitiesFilterMouseListener;
+	EndActivitiesFilterMouseListener endActivitiesFilterMouseListener;
+	
 	public ActivityFilteringTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
 		this.context = context;
 		this.model = model;
@@ -179,15 +234,42 @@ class ActivityFilteringTab extends JPanel {
 		
 		this.filterRelatedObjectsButton = new JButton("Filter on Related Objects");
 		this.add(this.filterRelatedObjectsButton);
+		this.filterRelatedObjectsButton.setEnabled(false);
 		
 		this.relatedObjectsListener = new ActivityFilteringRelatedObjectsMouseListener(this);
 		this.filterRelatedObjectsButton.addMouseListener(this.relatedObjectsListener);
+		
+		this.startActivitiesFilter = new JButton("Filter Starting With");
+		this.startActivitiesFilter.setEnabled(false);
+		this.add(this.startActivitiesFilter);
+		this.endActivitiesFilter = new JButton("Filter Ending With");
+		this.endActivitiesFilter.setEnabled(false);
+		this.add(this.endActivitiesFilter);
+		
+		this.startActivitiesFilterMouseListener = new StartActivitiesFilterMouseListener(this);
+		this.startActivitiesFilter.addMouseListener(this.startActivitiesFilterMouseListener);
+		
+		this.endActivitiesFilterMouseListener = new EndActivitiesFilterMouseListener(this);
+		this.endActivitiesFilter.addMouseListener(this.endActivitiesFilterMouseListener);
 	}
 	
 	public void setActivityAndObjectType(String activity, OcelObjectType objectType) {
 		this.activity = activity;
 		this.objectType = objectType;
 		this.setLabel();
+		
+		if (this.activity != null) {
+			this.filterRelatedObjectsButton.setEnabled(true);
+			
+			if (this.objectType != null) {
+				this.startActivitiesFilter.setEnabled(true);
+				this.endActivitiesFilter.setEnabled(true);
+			}
+			else {
+				this.startActivitiesFilter.setEnabled(false);
+				this.endActivitiesFilter.setEnabled(false);
+			}
+		}
 	}
 	
 	public void setLabel() {
@@ -201,6 +283,84 @@ class ActivityFilteringTab extends JPanel {
 	
 	public void changeModel(AnnotatedModel model) {
 		this.model = model;
+	}
+}
+
+class StartActivitiesFilterMouseListener implements MouseListener {
+	ActivityFilteringTab aft;
+
+	public StartActivitiesFilterMouseListener(ActivityFilteringTab aft) {
+		this.aft = aft;
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if (aft.activity != null) {
+			if (aft.objectType != null) {
+				Set<OcelObject> objects = this.aft.model.objectsHavingStartActivity(aft.activity, aft.objectType);
+				AnnotatedModel filtered = this.aft.model.filterOnRelatedObjects(objects);
+				this.aft.panel.changeModel(filtered);
+			}
+		}
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+
+class EndActivitiesFilterMouseListener implements MouseListener {
+	ActivityFilteringTab aft;
+
+	public EndActivitiesFilterMouseListener(ActivityFilteringTab aft) {
+		this.aft = aft;
+	}
+	
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if (aft.activity != null) {
+			if (aft.objectType != null) {
+				Set<OcelObject> objects = this.aft.model.objectsHavingEndActivity(aft.activity, aft.objectType);
+				AnnotatedModel filtered = this.aft.model.filterOnRelatedObjects(objects);
+				this.aft.panel.changeModel(filtered);
+			}
+		}
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -268,6 +428,7 @@ class EdgeFilteringTab extends JPanel {
 		this.add(label);
 		
 		this.filterRelatedObjectsButton = new JButton("Filter on Related Objects");
+		this.filterRelatedObjectsButton.setEnabled(false);
 		this.add(this.filterRelatedObjectsButton);
 		
 		this.relatedObjectsListener = new EdgesFilteringRelatedObjectsMouseListener(this);
@@ -277,6 +438,7 @@ class EdgeFilteringTab extends JPanel {
 	public void setEdge(ModelEdge edge) {
 		this.edge = edge;
 		this.setLabel();
+		this.filterRelatedObjectsButton.setEnabled(true);
 	}
 	
 	public void setLabel() {
