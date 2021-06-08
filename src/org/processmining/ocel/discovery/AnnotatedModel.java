@@ -13,6 +13,7 @@ import org.processmining.ocel.ocelobjects.OcelEvent;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 import org.processmining.ocel.ocelobjects.OcelObject;
 import org.processmining.ocel.ocelobjects.OcelObjectType;
+import org.processmining.ocel.utils.Separator;
 
 public class AnnotatedModel {
 	public AnnotatedModel original;
@@ -104,12 +105,43 @@ public class AnnotatedModel {
 		}
 	}
 	
+	public Set<OcelObject> relatedObjectsEdge(ModelEdge edge) {
+		Set<OcelObject> relatedObjects = new HashSet<OcelObject>();
+		for (String rea : edge.realizations) {
+			String[] events = rea.split(Separator.SEPARATOR);
+			if (this.ocel.events.containsKey(events[0]) && this.ocel.events.containsKey(events[1])) {
+				OcelEvent eve1 = this.ocel.events.get(events[0]);
+				OcelEvent eve2 = this.ocel.events.get(events[1]);
+				for (OcelObject obj : eve1.relatedObjects) {
+					if (eve2.relatedObjects.contains(obj)) {
+						relatedObjects.add(obj);
+					}
+				}
+			}
+		}
+		return relatedObjects;
+	}
+	
 	public Set<OcelObject> relatedObjectsActivity(String activity) {
 		Set<OcelObject> relatedObjects = new HashSet<OcelObject>();
 		for (OcelEvent eve : this.ocel.events.values()) {
 			if (eve.activity.equals(activity)) {
 				for (OcelObject obj : eve.relatedObjects) {
 					relatedObjects.add(obj);
+				}
+			}
+		}
+		return relatedObjects;
+	}
+	
+	public Set<OcelObject> relatedObjectsActivityOt(String activity, OcelObjectType ot) {
+		Set<OcelObject> relatedObjects = new HashSet<OcelObject>();
+		for (OcelEvent eve : this.ocel.events.values()) {
+			if (eve.activity.equals(activity)) {
+				for (OcelObject obj : eve.relatedObjects) {
+					if (obj.objectType.equals(ot)) {
+						relatedObjects.add(obj);
+					}
 				}
 			}
 		}

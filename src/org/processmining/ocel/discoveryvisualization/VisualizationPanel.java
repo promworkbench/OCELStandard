@@ -183,16 +183,13 @@ class ActivityFilteringRelatedObjectsMouseListener implements MouseListener {
 		// TODO Auto-generated method stub
 		if (aft.activity != null) {
 			if (aft.objectType != null) {
-				System.out.println("siiii3 "+aft.activity+" "+aft.objectType.name);
+				Set<OcelObject> relatedObjects = this.aft.model.relatedObjectsActivityOt(aft.activity, aft.objectType);
+				AnnotatedModel filtered = this.aft.model.filterOnRelatedObjects(relatedObjects);
+				this.aft.panel.changeModel(filtered);
 			}
 			else {
 				Set<OcelObject> relatedObjects = this.aft.model.relatedObjectsActivity(aft.activity);
 				AnnotatedModel filtered = this.aft.model.filterOnRelatedObjects(relatedObjects);
-				System.out.println(this.aft.model.ocel.events.size());
-				System.out.println(this.aft.model.ocel.objects.size());
-				System.out.println("");
-				System.out.println(filtered.ocel.events.size());
-				System.out.println(filtered.ocel.objects.size());
 				this.aft.panel.changeModel(filtered);
 			}
 		}
@@ -269,7 +266,9 @@ class EdgesFilteringRelatedObjectsMouseListener implements MouseListener {
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		ModelEdge edge = this.eft.edge;
-		System.out.println("siii2 "+edge.sourceActivity+"->"+edge.targetActivity+" ("+edge.objectType.name+")");
+		Set<OcelObject> edgeObjects = this.eft.model.relatedObjectsEdge(edge);
+		AnnotatedModel filtered = this.eft.model.filterOnRelatedObjects(edgeObjects);
+		this.eft.panel.changeModel(filtered);
 	}
 
 	public void mouseEntered(MouseEvent e) {
@@ -439,7 +438,7 @@ class VisualizationTab extends JPanel {
 			boolean is_ok = false;
 			for (String act : model.endActivities.get(ot).endpoints.keySet()) {
 				if (activityIndipendent.containsKey(act)) {
-					Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
+					Endpoint activity = model.endActivities.get(ot).endpoints.get(act);
 					if (activity.satisfy(this.panel.controlTab.IDX, MIN_ALLOWED_EDGE_COUNT)) {
 						is_ok = true;
 					}
@@ -450,7 +449,7 @@ class VisualizationTab extends JPanel {
 				Object eaNode = graph.insertVertex(parent, "", "", 150, 150, 60, 60, "shape=ellipse;fillColor="+this_color);
 				for (String act : model.endActivities.get(ot).endpoints.keySet()) {
 					if (activityIndipendent.containsKey(act)) {
-						Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
+						Endpoint activity = model.endActivities.get(ot).endpoints.get(act);
 						if (activity.satisfy(this.panel.controlTab.IDX, MIN_ALLOWED_EDGE_COUNT)) {
 							Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.IDX), activityIndipendent.get(act), eaNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
 						}
