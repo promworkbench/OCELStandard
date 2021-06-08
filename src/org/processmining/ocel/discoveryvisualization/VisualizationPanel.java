@@ -11,10 +11,13 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.MenuElement;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -99,6 +102,10 @@ class ControlTab extends JPanel {
 	JLabel syntheticMetricsSelectionLabel;
 	MetricsActionListener metricsActionListener;
 	
+	JPopupMenu menu;
+	JButton menuShow;
+	MenuShowMouseListener menuShowListener;
+	
 	public Double getPercAct() {
 		return this.actSlider.getValue();
 	}
@@ -144,11 +151,68 @@ class ControlTab extends JPanel {
 		
 		this.resetFiltersMouseListener = new ResetFiltersMouseListener(this);
 		this.resetFilters.addMouseListener(this.resetFiltersMouseListener);
+		
+		this.initializeMenu();
+		
+		this.menuShow = new JButton("Select Object Types");
+		this.add(this.menuShow);
+		this.menuShowListener = new MenuShowMouseListener(this);
+		this.menuShow.addMouseListener(this.menuShowListener);
 	}
 	
 	public void changeModel(AnnotatedModel model) {
 		this.model = model;
+		
+		this.menu = new JPopupMenu();
 	}
+	
+	public void initializeMenu() {
+		this.menu = new JPopupMenu();
+		for (String ot : this.model.ocel.objectTypes.keySet()) {
+			JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(ot);
+			menuItem.setSelected(true);
+			this.menu.add(menuItem);
+		}
+		for (MenuElement menuElement : this.menu.getSubElements()) {
+			JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem)menuElement;
+			System.out.println(menuItem.getLabel());
+			System.out.println(menuItem.isSelected());
+		}
+	}
+}
+
+class MenuShowMouseListener implements MouseListener {
+	ControlTab tab;
+	
+	public MenuShowMouseListener(ControlTab tab) {
+		this.tab = tab;
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		tab.menu.show(tab.menuShow, 0, tab.menuShow.getHeight());
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
 
 class MetricsActionListener implements ActionListener {
