@@ -54,6 +54,22 @@ public class OcelEventLog {
 		this.events.put(newEvent.id, newEvent);
 	}
 	
+	public void cloneEvent(OcelEvent event, Set<String> allowedObjectTypes) {
+		OcelEvent newEvent = event.clone();
+		for (OcelObject obj : event.relatedObjects) {
+			String thisType = obj.objectType.name;
+			if (allowedObjectTypes.contains(thisType)) {
+				OcelObject newObj = cloneObject(obj);
+				newEvent.relatedObjects.add(newObj);
+				newEvent.relatedObjectsIdentifiers.add(newObj.id);
+				newObj.relatedEvents.add(newEvent);
+			}
+		}
+		if (newEvent.relatedObjects.size() > 0) {
+			this.events.put(newEvent.id, newEvent);
+		}
+	}
+	
 	public OcelObject cloneObject(OcelObject original) {
 		if (!this.objects.containsKey(original.id)) {
 			OcelObject newObject = new OcelObject(this);

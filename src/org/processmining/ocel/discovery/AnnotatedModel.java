@@ -9,6 +9,8 @@ import java.util.Set;
 import org.processmining.ocel.annotations.ActivityOtDependent;
 import org.processmining.ocel.annotations.ActivityOtIndipendent;
 import org.processmining.ocel.annotations.EdgesMeasures;
+import org.processmining.ocel.filtering.FilterNotRelatedObjects;
+import org.processmining.ocel.filtering.FilterOnObjectTypes;
 import org.processmining.ocel.filtering.FilterOnRelatedObjects;
 import org.processmining.ocel.ocelobjects.OcelEvent;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
@@ -135,36 +137,42 @@ public class AnnotatedModel {
 		return relatedObjects;
 	}
 	
-	public Set<OcelObject> relatedObjectsActivityOt(String activity, OcelObjectType ot) {
+	public Set<OcelObject> relatedObjectsActivityOt(String activity, OcelObjectType ot, boolean positive) {
+		Set<OcelObject> allObjects = new HashSet<OcelObject>();
 		Set<OcelObject> relatedObjects = new HashSet<OcelObject>();
 		for (OcelEvent eve : this.ocel.events.values()) {
-			if (eve.activity.equals(activity)) {
-				for (OcelObject obj : eve.relatedObjects) {
-					if (obj.objectType.equals(ot)) {
+			for (OcelObject obj : eve.relatedObjects) {
+				if (obj.objectType.equals(ot)) {
+					allObjects.add(obj);
+					if (eve.activity.equals(activity)) {
 						relatedObjects.add(obj);
 					}
 				}
 			}
 		}
-		return relatedObjects;
+		if (positive) {
+			return relatedObjects;
+		}
+		allObjects.removeAll(relatedObjects);
+		return allObjects;
 	}
 	
-	public Set<OcelObject> objectsHavingStartActivity(String activity, OcelObjectType ot) {
+	public Set<OcelObject> objectsHavingStartActivity(String activity, OcelObjectType ot, boolean positive) {
 		Set<OcelObject> satisfyingObjects = new HashSet<OcelObject>();
 		for (OcelObject obj : this.ocel.objects.values()) {
 			List<OcelEvent> evs = obj.sortedRelatedEvents;
-			if (evs.size() > 0 && evs.get(0).activity.equals(activity)) {
+			if (evs.size() > 0 && ((positive && evs.get(0).activity.equals(activity) || (!positive && !evs.get(0).activity.equals(activity))))) {
 				satisfyingObjects.add(obj);
 			}
 		}
 		return satisfyingObjects;
 	}
 	
-	public Set<OcelObject> objectsHavingEndActivity(String activity, OcelObjectType ot) {
+	public Set<OcelObject> objectsHavingEndActivity(String activity, OcelObjectType ot, boolean positive) {
 		Set<OcelObject> satisfyingObjects = new HashSet<OcelObject>();
 		for (OcelObject obj : this.ocel.objects.values()) {
 			List<OcelEvent> evs = obj.sortedRelatedEvents;
-			if (evs.size() > 0 && evs.get(evs.size()-1).activity.equals(activity)) {
+			if (evs.size() > 0 && ((positive && evs.get(evs.size()-1).activity.equals(activity) || (!positive && !evs.get(evs.size()-1).activity.equals(activity))))) {
 				satisfyingObjects.add(obj);
 			}
 		}
@@ -173,6 +181,20 @@ public class AnnotatedModel {
 	
 	public AnnotatedModel filterOnRelatedObjects(Set<OcelObject> objects) {
 		OcelEventLog filtered = FilterOnRelatedObjects.apply(this.ocel, objects);
+		AnnotatedModel ret = new AnnotatedModel(filtered);
+		ret.original = this.original;
+		return ret;
+	}
+	
+	public AnnotatedModel filterOnNotRelatedObjects(Set<OcelObject> positive, Set<OcelObject> negative) {
+		OcelEventLog filtered = FilterNotRelatedObjects.apply(this.ocel, positive, negative);
+		AnnotatedModel ret = new AnnotatedModel(filtered);
+		ret.original = this.original;
+		return ret;
+	}
+	
+	public AnnotatedModel filterOnObjectTypes(Set<String> allowedObjectTypes) {
+		OcelEventLog filtered = FilterOnObjectTypes.apply(this.ocel, allowedObjectTypes);
 		AnnotatedModel ret = new AnnotatedModel(filtered);
 		ret.original = this.original;
 		return ret;

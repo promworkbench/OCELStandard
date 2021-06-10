@@ -106,6 +106,9 @@ class ControlTab extends JPanel {
 	JButton menuShow;
 	MenuShowMouseListener menuShowListener;
 	
+	JButton filterObjectTypes;
+	FilterObjectTypesButtonMouseListener filterObjectTypesButtonListener;
+	
 	public Double getPercAct() {
 		return this.actSlider.getValue();
 	}
@@ -158,12 +161,18 @@ class ControlTab extends JPanel {
 		this.add(this.menuShow);
 		this.menuShowListener = new MenuShowMouseListener(this);
 		this.menuShow.addMouseListener(this.menuShowListener);
+		
+		this.filterObjectTypes = new JButton("Filter Object Types");
+		this.add(this.filterObjectTypes);
+		this.filterObjectTypesButtonListener = new FilterObjectTypesButtonMouseListener(this);
+		this.filterObjectTypes.addMouseListener(this.filterObjectTypesButtonListener);
 	}
 	
 	public void changeModel(AnnotatedModel model) {
 		this.model = model;
 		
 		this.menu = new JPopupMenu();
+		this.initializeMenu();
 	}
 	
 	public void initializeMenu() {
@@ -173,12 +182,51 @@ class ControlTab extends JPanel {
 			menuItem.setSelected(true);
 			this.menu.add(menuItem);
 		}
-		for (MenuElement menuElement : this.menu.getSubElements()) {
-			JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem)menuElement;
-			System.out.println(menuItem.getLabel());
-			System.out.println(menuItem.isSelected());
-		}
 	}
+}
+
+class FilterObjectTypesButtonMouseListener implements MouseListener {
+	ControlTab tab;
+	
+	public FilterObjectTypesButtonMouseListener(ControlTab tab) {
+		this.tab = tab;
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		Set<String> selectedObjectTypes = new HashSet<String>();
+		for (MenuElement menuElement : this.tab.menu.getSubElements()) {
+			JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem)menuElement;
+			if (menuItem.isSelected()) {
+				selectedObjectTypes.add(menuItem.getLabel());
+			}
+		}
+		AnnotatedModel filtered = this.tab.panel.model.filterOnObjectTypes(selectedObjectTypes);
+		this.tab.panel.changeModel(filtered);
+		this.tab.panel.visualizationTab.doRepresentationWork();
+		this.tab.panel.visualizationTab.addGraphToView();
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
 
 class MenuShowMouseListener implements MouseListener {
@@ -200,6 +248,7 @@ class MenuShowMouseListener implements MouseListener {
 
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
+		System.out.println("show menu!!");
 		tab.menu.show(tab.menuShow, 0, tab.menuShow.getHeight());
 	}
 
@@ -409,8 +458,9 @@ class StartActivitiesFilterMouseListener implements MouseListener {
 		// TODO Auto-generated method stub
 		if (aft.activity != null) {
 			if (aft.objectType != null) {
-				Set<OcelObject> objects = this.aft.model.objectsHavingStartActivity(aft.activity, aft.objectType);
-				AnnotatedModel filtered = this.aft.model.filterOnRelatedObjects(objects);
+				Set<OcelObject> positive = this.aft.model.objectsHavingStartActivity(aft.activity, aft.objectType, false);
+				Set<OcelObject> negative = this.aft.model.objectsHavingStartActivity(aft.activity, aft.objectType, true);
+				AnnotatedModel filtered = this.aft.model.filterOnNotRelatedObjects(positive, negative);
 				this.aft.panel.changeModel(filtered);
 			}
 		}
@@ -448,8 +498,9 @@ class EndActivitiesFilterMouseListener implements MouseListener {
 		// TODO Auto-generated method stub
 		if (aft.activity != null) {
 			if (aft.objectType != null) {
-				Set<OcelObject> objects = this.aft.model.objectsHavingEndActivity(aft.activity, aft.objectType);
-				AnnotatedModel filtered = this.aft.model.filterOnRelatedObjects(objects);
+				Set<OcelObject> positive = this.aft.model.objectsHavingEndActivity(aft.activity, aft.objectType, false);
+				Set<OcelObject> negative = this.aft.model.objectsHavingEndActivity(aft.activity, aft.objectType, true);
+				AnnotatedModel filtered = this.aft.model.filterOnNotRelatedObjects(positive, negative);
 				this.aft.panel.changeModel(filtered);
 			}
 		}
@@ -487,7 +538,7 @@ class ActivityFilteringRelatedObjectsMouseListener implements MouseListener {
 		// TODO Auto-generated method stub
 		if (aft.activity != null) {
 			if (aft.objectType != null) {
-				Set<OcelObject> relatedObjects = this.aft.model.relatedObjectsActivityOt(aft.activity, aft.objectType);
+				Set<OcelObject> relatedObjects = this.aft.model.relatedObjectsActivityOt(aft.activity, aft.objectType, true);
 				AnnotatedModel filtered = this.aft.model.filterOnRelatedObjects(relatedObjects);
 				this.aft.panel.changeModel(filtered);
 			}
