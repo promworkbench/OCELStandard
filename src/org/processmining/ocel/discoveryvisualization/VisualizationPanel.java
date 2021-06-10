@@ -822,7 +822,7 @@ class VisualizationTab extends JPanel {
 	GraphMouseListener graphMouseListener;
 	
 	public mxGraph graph;
-	public mxGraphComponent graphComponent;
+	public ExtendedGraphComponent graphComponent;
 	JScrollPane scrollPane;
 	
 	Map<String, Object> activityIndipendentString;
@@ -1020,7 +1020,7 @@ class VisualizationTab extends JPanel {
 	}
 	
 	public void addGraphToView() {
-		this.graphComponent = new mxGraphComponent(this.graph);
+		this.graphComponent = new ExtendedGraphComponent(this.panel, this.graph);
 		
 		this.scrollPane = new JScrollPane(this.graphComponent);
 		this.scrollPane.setPreferredSize(new Dimension(1824, 756));
@@ -1037,6 +1037,22 @@ class VisualizationTab extends JPanel {
 	
 	public void changeModel(AnnotatedModel model) {
 		this.model = model;
+	}
+}
+
+class ExtendedGraphComponent extends mxGraphComponent {
+	VisualizationPanel panel;
+	mxGraph graph;
+	
+	public ExtendedGraphComponent(VisualizationPanel panel, mxGraph graph) {
+		super(graph);
+		this.panel = panel;
+		this.graph = graph;
+	}
+	
+	@Override
+	public String getToolTipText(MouseEvent e) {
+		return "";
 	}
 }
 
