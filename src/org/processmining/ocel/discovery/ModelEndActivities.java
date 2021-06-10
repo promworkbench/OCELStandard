@@ -28,11 +28,11 @@ public class ModelEndActivities {
 				if (!endpoints.containsKey(act)) {
 					endpoints.put(act, new Endpoint(act, ot));
 				}
-				endpoints.get(act).increaseNumEvents();
+				endpoints.get(act).increaseNumObjects();
 			}
 		}
 		for (Endpoint e : endpoints.values()) {
-			this.maxEndpoint = Integer.max(this.maxEndpoint, e.numEvents);
+			this.maxEndpoint = Integer.max(this.maxEndpoint, e.numObjects);
 		}
 	}
 	
@@ -47,7 +47,7 @@ public class ModelEndActivities {
 	public Map<String, String> getAtLeastOnce(int idx, int count) {
 		Map<String, String> ret = new HashMap<String, String>();
 		for (Endpoint e : endpoints.values()) {
-			if (e.numEvents == maxEndpoint || e.satisfy(idx, count)) {
+			if (e.numObjects == maxEndpoint || e.satisfy(idx, count)) {
 				ret.put(e.activity, e.toReducedString(idx));
 			}
 		}

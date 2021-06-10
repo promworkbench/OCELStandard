@@ -112,14 +112,16 @@ public class AnnotatedModel {
 	
 	public Set<OcelObject> relatedObjectsEdge(ModelEdge edge) {
 		Set<OcelObject> relatedObjects = new HashSet<OcelObject>();
-		for (String rea : edge.realizations) {
-			String[] events = rea.split(Separator.SEPARATOR);
-			if (this.ocel.events.containsKey(events[0]) && this.ocel.events.containsKey(events[1])) {
-				OcelEvent eve1 = this.ocel.events.get(events[0]);
-				OcelEvent eve2 = this.ocel.events.get(events[1]);
-				for (OcelObject obj : eve1.relatedObjects) {
-					if (eve2.relatedObjects.contains(obj)) {
-						relatedObjects.add(obj);
+		if (edge != null) {
+			for (String rea : edge.realizations) {
+				String[] events = rea.split(Separator.SEPARATOR);
+				if (this.ocel.events.containsKey(events[0]) && this.ocel.events.containsKey(events[1])) {
+					OcelEvent eve1 = this.ocel.events.get(events[0]);
+					OcelEvent eve2 = this.ocel.events.get(events[1]);
+					for (OcelObject obj : eve1.relatedObjects) {
+						if (eve2.relatedObjects.contains(obj)) {
+							relatedObjects.add(obj);
+						}
 					}
 				}
 			}

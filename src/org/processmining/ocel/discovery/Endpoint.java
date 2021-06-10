@@ -5,29 +5,33 @@ import org.processmining.ocel.ocelobjects.OcelObjectType;
 public class Endpoint {
 	String activity;
 	public OcelObjectType ot;
-	public int numEvents;
+	public int numObjects;
 	
 	public Endpoint(String activity, OcelObjectType ot) {
 		this.activity = activity;
 		this.ot = ot;
-		this.numEvents = 0;
+		this.numObjects = 0;
 	}
 	
-	public void increaseNumEvents() {
-		this.numEvents++;
+	public void increaseNumObjects() {
+		this.numObjects++;
+	}
+	
+	public int getValue() {
+		return this.numObjects;
 	}
 	
 	
 	public String toString() {
-		return String.format("UO=%d", this.numEvents);
+		return String.format("UO=%d", this.numObjects);
 	}
 	
 	public String toReducedString(int idx) {
-		return String.format("UO=%d", this.numEvents);
+		return String.format("UO=%d", this.numObjects);
 	}
 	
 	public boolean satisfy(int idx, int count) {
-		if (this.numEvents >= count) {
+		if (this.numObjects >= count) {
 			return true;
 		}
 		return false;

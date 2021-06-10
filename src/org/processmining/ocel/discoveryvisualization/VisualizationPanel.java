@@ -939,7 +939,9 @@ class VisualizationTab extends JPanel {
 						invEdges.put(intermediateNode, edge);
 					}
 					else {
-						Object arc = graph.insertEdge(parent, null, edgeMeasure.toReducedString(this.panel.controlTab.getSelectedIndex()), obj1, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+						int value = edgeMeasure.getValue(this.panel.controlTab.getSelectedIndex());
+						int penwidth = 1 + (int)Math.floor(Math.log1p(value)/2.0);
+						Object arc = graph.insertEdge(parent, null, edgeMeasure.toReducedString(this.panel.controlTab.getSelectedIndex()), obj1, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
 						edges.put(edge, arc);
 						invEdges.put(arc, edge);
 					}
@@ -951,7 +953,11 @@ class VisualizationTab extends JPanel {
 			boolean is_ok = false;
 			for (String act : model.startActivities.get(ot).endpoints.keySet()) {
 				if (activityIndipendent.containsKey(act)) {
-					is_ok = true;
+					Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
+					if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
+						is_ok = true;
+						break;
+					}
 				}
 			}
 			if (is_ok) {
@@ -960,7 +966,11 @@ class VisualizationTab extends JPanel {
 				for (String act : model.startActivities.get(ot).endpoints.keySet()) {
 					if (activityIndipendent.containsKey(act)) {
 						Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
-						Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.getSelectedIndex()), saNode, activityIndipendent.get(act), "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+						if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
+							int value = activity.getValue();
+							int penwidth = 1 + (int)Math.floor(Math.log1p(value)/2.0);
+							Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.getSelectedIndex()), saNode, activityIndipendent.get(act), "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
+						}
 					}
 				}
 			}
@@ -973,6 +983,7 @@ class VisualizationTab extends JPanel {
 					Endpoint activity = model.endActivities.get(ot).endpoints.get(act);
 					if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
 						is_ok = true;
+						break;
 					}
 				}
 			}
@@ -983,7 +994,9 @@ class VisualizationTab extends JPanel {
 					if (activityIndipendent.containsKey(act)) {
 						Endpoint activity = model.endActivities.get(ot).endpoints.get(act);
 						if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
-							Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.getSelectedIndex()), activityIndipendent.get(act), eaNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+							int value = activity.getValue();
+							int penwidth = 1 + (int)Math.floor(Math.log1p(value)/2.0);
+							Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.getSelectedIndex()), activityIndipendent.get(act), eaNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
 						}
 					}
 				}
