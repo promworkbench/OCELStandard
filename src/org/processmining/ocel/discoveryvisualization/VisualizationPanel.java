@@ -373,6 +373,9 @@ class ActivityFilteringTab extends JPanel {
 	StartActivitiesFilterMouseListener startActivitiesFilterMouseListener;
 	EndActivitiesFilterMouseListener endActivitiesFilterMouseListener;
 	
+	JButton filterNotRelatedObjectsFilter;
+	ActivityFilteringNotRelatedObjectsMouseListener notRelatedObjectsListener;
+	
 	public ActivityFilteringTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
 		this.context = context;
 		this.model = model;
@@ -390,10 +393,10 @@ class ActivityFilteringTab extends JPanel {
 		this.relatedObjectsListener = new ActivityFilteringRelatedObjectsMouseListener(this);
 		this.filterRelatedObjectsButton.addMouseListener(this.relatedObjectsListener);
 		
-		this.startActivitiesFilter = new JButton("Filter Starting With");
+		this.startActivitiesFilter = new JButton("Filter NOT Starting With");
 		this.startActivitiesFilter.setEnabled(false);
 		this.add(this.startActivitiesFilter);
-		this.endActivitiesFilter = new JButton("Filter Ending With");
+		this.endActivitiesFilter = new JButton("Filter NOT Ending With");
 		this.endActivitiesFilter.setEnabled(false);
 		this.add(this.endActivitiesFilter);
 		
@@ -402,6 +405,12 @@ class ActivityFilteringTab extends JPanel {
 		
 		this.endActivitiesFilterMouseListener = new EndActivitiesFilterMouseListener(this);
 		this.endActivitiesFilter.addMouseListener(this.endActivitiesFilterMouseListener);
+		
+		this.filterNotRelatedObjectsFilter = new JButton("Filter on NON Related Objects");
+		this.filterNotRelatedObjectsFilter.setEnabled(false);
+		this.add(this.filterNotRelatedObjectsFilter);
+		this.notRelatedObjectsListener = new ActivityFilteringNotRelatedObjectsMouseListener(this);
+		this.filterNotRelatedObjectsFilter.addMouseListener(this.notRelatedObjectsListener);
 	}
 	
 	public void setActivityAndObjectType(String activity, OcelObjectType objectType) {
@@ -415,10 +424,12 @@ class ActivityFilteringTab extends JPanel {
 			if (this.objectType != null) {
 				this.startActivitiesFilter.setEnabled(true);
 				this.endActivitiesFilter.setEnabled(true);
+				this.filterNotRelatedObjectsFilter.setEnabled(true);
 			}
 			else {
 				this.startActivitiesFilter.setEnabled(false);
 				this.endActivitiesFilter.setEnabled(false);
+				this.filterNotRelatedObjectsFilter.setEnabled(false);
 			}
 		}
 	}
@@ -561,6 +572,46 @@ class ActivityFilteringRelatedObjectsMouseListener implements MouseListener {
 	}
 }
 
+class ActivityFilteringNotRelatedObjectsMouseListener implements MouseListener {
+	ActivityFilteringTab aft;
+	
+	public ActivityFilteringNotRelatedObjectsMouseListener(ActivityFilteringTab aft) {
+		this.aft = aft;
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if (aft.activity != null) {
+			if (aft.objectType != null) {
+				Set<OcelObject> positive = this.aft.model.relatedObjectsActivityOt(aft.activity, aft.objectType, false);
+				Set<OcelObject> negative = this.aft.model.relatedObjectsActivityOt(aft.activity, aft.objectType, true);
+				AnnotatedModel filtered = this.aft.model.filterOnNotRelatedObjects(positive, negative);
+				this.aft.panel.changeModel(filtered);
+			}
+		}
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+
 class EdgeFilteringTab extends JPanel {
 	PluginContext context;
 	AnnotatedModel model;
@@ -570,6 +621,9 @@ class EdgeFilteringTab extends JPanel {
 	JLabel label;
 	JButton filterRelatedObjectsButton;
 	EdgesFilteringRelatedObjectsMouseListener relatedObjectsListener;
+	
+	JButton filterNotRelatedObjectsButton;
+	EdgesFilteringNotRelatedObjectsMouseListener notRelatedObjectsListener;
 	
 	public EdgeFilteringTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
 		this.context = context;
@@ -586,12 +640,19 @@ class EdgeFilteringTab extends JPanel {
 		
 		this.relatedObjectsListener = new EdgesFilteringRelatedObjectsMouseListener(this);
 		this.filterRelatedObjectsButton.addMouseListener(this.relatedObjectsListener);
+		
+		this.filterNotRelatedObjectsButton = new JButton("Filter on NON Related Objects");
+		this.filterNotRelatedObjectsButton.setEnabled(false);
+		this.add(this.filterNotRelatedObjectsButton);
+		this.notRelatedObjectsListener = new EdgesFilteringNotRelatedObjectsMouseListener(this);
+		this.filterNotRelatedObjectsButton.addMouseListener(this.notRelatedObjectsListener);
 	}
 	
 	public void setEdge(ModelEdge edge) {
 		this.edge = edge;
 		this.setLabel();
 		this.filterRelatedObjectsButton.setEnabled(true);
+		this.filterNotRelatedObjectsButton.setEnabled(true);
 	}
 	
 	public void setLabel() {
@@ -625,6 +686,43 @@ class EdgesFilteringRelatedObjectsMouseListener implements MouseListener {
 		ModelEdge edge = this.eft.edge;
 		Set<OcelObject> edgeObjects = this.eft.model.relatedObjectsEdge(edge);
 		AnnotatedModel filtered = this.eft.model.filterOnRelatedObjects(edgeObjects);
+		this.eft.panel.changeModel(filtered);
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+
+class EdgesFilteringNotRelatedObjectsMouseListener implements MouseListener {
+	EdgeFilteringTab eft;
+	
+	public EdgesFilteringNotRelatedObjectsMouseListener(EdgeFilteringTab eft) {
+		this.eft = eft;
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		ModelEdge edge = this.eft.edge;
+		Set<OcelObject> positive = this.eft.model.notRelatedObjectsEdge(edge);
+		Set<OcelObject> negative = this.eft.model.relatedObjectsEdge(edge);
+		AnnotatedModel filtered = this.eft.model.filterOnNotRelatedObjects(positive, negative);
 		this.eft.panel.changeModel(filtered);
 	}
 

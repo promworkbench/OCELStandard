@@ -20,6 +20,7 @@ import org.processmining.ocel.utils.Separator;
 
 public class AnnotatedModel {
 	public AnnotatedModel original;
+	public AnnotatedModel parent;
 	public OcelEventLog ocel;
 	public ModelActivities activities;
 	public ModelActivityOtGroups activityOtGroups;
@@ -46,6 +47,7 @@ public class AnnotatedModel {
 		this.calculateEndActivities();
 		this.calculateExtremes(0);
 		this.original = this;
+		this.parent = this;
 	}
 	
 	public void calculateIndipendent() {
@@ -125,6 +127,14 @@ public class AnnotatedModel {
 		return relatedObjects;
 	}
 	
+	public Set<OcelObject> notRelatedObjectsEdge(ModelEdge edge) {
+		OcelObjectType otype = edge.objectType;
+		Set<OcelObject> allObjects = new HashSet<OcelObject>(otype.objects);
+		Set<OcelObject> relatedObjects = this.relatedObjectsEdge(edge);
+		allObjects.removeAll(relatedObjects);
+		return allObjects;
+	}
+	
 	public Set<OcelObject> relatedObjectsActivity(String activity) {
 		Set<OcelObject> relatedObjects = new HashSet<OcelObject>();
 		for (OcelEvent eve : this.ocel.events.values()) {
@@ -183,6 +193,7 @@ public class AnnotatedModel {
 		OcelEventLog filtered = FilterOnRelatedObjects.apply(this.ocel, objects);
 		AnnotatedModel ret = new AnnotatedModel(filtered);
 		ret.original = this.original;
+		ret.parent = this;
 		return ret;
 	}
 	
@@ -190,6 +201,7 @@ public class AnnotatedModel {
 		OcelEventLog filtered = FilterNotRelatedObjects.apply(this.ocel, positive, negative);
 		AnnotatedModel ret = new AnnotatedModel(filtered);
 		ret.original = this.original;
+		ret.parent = this;
 		return ret;
 	}
 	
@@ -197,6 +209,7 @@ public class AnnotatedModel {
 		OcelEventLog filtered = FilterOnObjectTypes.apply(this.ocel, allowedObjectTypes);
 		AnnotatedModel ret = new AnnotatedModel(filtered);
 		ret.original = this.original;
+		ret.parent = this;
 		return ret;
 	}
 }
