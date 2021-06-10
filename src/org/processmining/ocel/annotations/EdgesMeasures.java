@@ -77,6 +77,7 @@ public class EdgesMeasures {
 	
 	public String toString() {
 		StringBuilder ret = new StringBuilder();
+		ret.append(String.format("%s ->\n%s\n", this.edge.sourceActivity, this.edge.targetActivity));
 		ret.append(String.format("(%s)\n", this.edge.objectType.name));
 		ret.append(String.format("event couples = %d\n", this.eventCouples));
 		ret.append(String.format("unique objects = %d\n", this.uniqueObjects));
