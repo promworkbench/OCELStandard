@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -13,7 +14,9 @@ import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -21,13 +24,18 @@ import javax.swing.MenuElement;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.processmining.contexts.uitopia.UIPluginContext;
+import org.processmining.framework.packages.PackageDescriptor;
+import org.processmining.framework.packages.PackageDescriptor.OS;
 import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.PluginDescriptor;
 import org.processmining.ocel.annotations.ActivityOtDependent;
 import org.processmining.ocel.annotations.ActivityOtIndipendent;
 import org.processmining.ocel.annotations.EdgesMeasures;
 import org.processmining.ocel.discovery.AnnotatedModel;
 import org.processmining.ocel.discovery.Endpoint;
 import org.processmining.ocel.discovery.ModelEdge;
+import org.processmining.ocel.ocelobjects.OcelEventLog;
 import org.processmining.ocel.ocelobjects.OcelObject;
 import org.processmining.ocel.ocelobjects.OcelObjectType;
 
@@ -109,6 +117,9 @@ class ControlTab extends JPanel {
 	JButton filterObjectTypes;
 	FilterObjectTypesButtonMouseListener filterObjectTypesButtonListener;
 	
+	JButton exportFilteredButton;
+	ExportFilteredLogMouseListener filteredLogMouseListener;
+	
 	public Double getPercAct() {
 		return this.actSlider.getValue();
 	}
@@ -166,6 +177,11 @@ class ControlTab extends JPanel {
 		this.add(this.filterObjectTypes);
 		this.filterObjectTypesButtonListener = new FilterObjectTypesButtonMouseListener(this);
 		this.filterObjectTypes.addMouseListener(this.filterObjectTypesButtonListener);
+		
+		this.exportFilteredButton = new JButton("Export Filtered Log");
+		this.add(this.exportFilteredButton);
+		this.filteredLogMouseListener = new ExportFilteredLogMouseListener(this);
+		this.exportFilteredButton.addMouseListener(this.filteredLogMouseListener);
 	}
 	
 	public void changeModel(AnnotatedModel model) {
@@ -182,6 +198,68 @@ class ControlTab extends JPanel {
 			menuItem.setSelected(true);
 			this.menu.add(menuItem);
 		}
+	}
+	
+	public void exportOcel(OcelEventLog ocel) throws Exception {
+		UIPluginContext context2 = (UIPluginContext) this.context;
+		
+		String actualAction = " ";
+		PackageDescriptor pack = new PackageDescriptor(actualAction, actualAction, OS.ALL, actualAction, actualAction, actualAction, actualAction, actualAction, actualAction, actualAction, actualAction, true, true, new ArrayList<String>(), new ArrayList<String>());
+		
+		PluginDescriptor descriptor = null;
+		
+		try {
+			descriptor = new PluginDescriptorImpl2(FilteredLogExporterSS.class, context.getClass(), pack);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Object[] objects = new Object[1];
+		objects[0] = ocel;
+		
+		context.invokePlugin(descriptor, 0, objects);
+		
+	    JOptionPane.showMessageDialog(new JFrame(), "Exported OCEL!", "Dialog",
+	            JOptionPane.INFORMATION_MESSAGE);
+	}
+}
+
+class ExportFilteredLogMouseListener implements MouseListener {
+	ControlTab tab;
+	
+	public ExportFilteredLogMouseListener(ControlTab tab) {
+		this.tab = tab;
+	}
+	
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		try {
+			this.tab.exportOcel(this.tab.model.ocel);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
