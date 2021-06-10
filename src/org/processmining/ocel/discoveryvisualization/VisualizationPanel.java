@@ -825,8 +825,9 @@ class VisualizationTab extends JPanel {
 	public mxGraphComponent graphComponent;
 	JScrollPane scrollPane;
 	
-	Map<String, Object> activityIndipendent;
-	Map<Object, String> invActivityIndipendent;
+	Map<String, Object> activityIndipendentString;
+	Map<ActivityOtIndipendent, Object> activityIndipendent;
+	Map<Object, ActivityOtIndipendent> invActivityIndipendent;
 	Map<Object, ActivityOtDependent> invActivityOtDependent;
 		
 	Map<ModelEdge, Object> edges;
@@ -861,8 +862,9 @@ class VisualizationTab extends JPanel {
 			this.remove(this.scrollPane);
 			//this.updateUI();
 		}
-		this.activityIndipendent = new HashMap<String, Object>();
-		this.invActivityIndipendent = new HashMap<Object, String>();
+		this.activityIndipendentString = new HashMap<String, Object>();
+		this.activityIndipendent = new HashMap<ActivityOtIndipendent, Object>();
+		this.invActivityIndipendent = new HashMap<Object, ActivityOtIndipendent>();
 		this.invActivityOtDependent = new HashMap<Object, ActivityOtDependent>();
 		this.edges = new HashMap<ModelEdge, Object>();
 		this.invEdges = new HashMap<Object, ModelEdge>();
@@ -906,8 +908,9 @@ class VisualizationTab extends JPanel {
 				String hex = String.format("#%02x%02x%02x", cc, cc, cc);
 				
 				Object activityObject = graph.insertVertex(parent, activity.activity, label, 150, 150, width, height, "fontSize=18;fillColor="+hex);
-				activityIndipendent.put(activity.activity, activityObject);
-				invActivityIndipendent.put(activityObject, activity.activity);
+				activityIndipendent.put(activity, activityObject);
+				invActivityIndipendent.put(activityObject, activity);
+				activityIndipendentString.put(activity.activity, activityObject);
 				
 				if (this.expandedActivities.contains(act)) {
 					for (String ot : this.model.dependentNodeMeasures.get(act).keySet()) {
@@ -929,10 +932,10 @@ class VisualizationTab extends JPanel {
 			
 			EdgesMeasures edgeMeasure = model.edgesMeasures.get(edge);
 			
-			if (activityIndipendent.containsKey(act1) && activityIndipendent.containsKey(act2)) {
+			if (activityIndipendentString.containsKey(act1) && activityIndipendentString.containsKey(act2)) {
 				if (edgeMeasure.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
-					Object obj1 = activityIndipendent.get(act1);
-					Object obj2 = activityIndipendent.get(act2);
+					Object obj1 = activityIndipendentString.get(act1);
+					Object obj2 = activityIndipendentString.get(act2);
 					String this_color = getColorFromString(edge.objectType.name);
 					
 					if (this.expandedModelEdges.contains(edge)) {
@@ -956,7 +959,7 @@ class VisualizationTab extends JPanel {
 		for (OcelObjectType ot : model.startActivities.keySet()) {
 			boolean is_ok = false;
 			for (String act : model.startActivities.get(ot).endpoints.keySet()) {
-				if (activityIndipendent.containsKey(act)) {
+				if (activityIndipendentString.containsKey(act)) {
 					Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
 					if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
 						is_ok = true;
@@ -968,12 +971,12 @@ class VisualizationTab extends JPanel {
 				String this_color = getColorFromString(ot.name);
 				Object saNode = graph.insertVertex(parent, "", ot.name, 150, 150, 275, 60, "shape=ellipse;fillColor="+this_color+";fontColor=white");
 				for (String act : model.startActivities.get(ot).endpoints.keySet()) {
-					if (activityIndipendent.containsKey(act)) {
+					if (activityIndipendentString.containsKey(act)) {
 						Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
 						if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
 							int value = activity.getValue();
 							int penwidth = 1 + (int)Math.floor(Math.log1p(value)/2.0);
-							Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.getSelectedIndex()), saNode, activityIndipendent.get(act), "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
+							Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.getSelectedIndex()), saNode, activityIndipendentString.get(act), "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
 						}
 					}
 				}
@@ -983,7 +986,7 @@ class VisualizationTab extends JPanel {
 		for (OcelObjectType ot : model.endActivities.keySet()) {
 			boolean is_ok = false;
 			for (String act : model.endActivities.get(ot).endpoints.keySet()) {
-				if (activityIndipendent.containsKey(act)) {
+				if (activityIndipendentString.containsKey(act)) {
 					Endpoint activity = model.endActivities.get(ot).endpoints.get(act);
 					if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
 						is_ok = true;
@@ -995,12 +998,12 @@ class VisualizationTab extends JPanel {
 				String this_color = getColorFromString(ot.name);
 				Object eaNode = graph.insertVertex(parent, "", "", 150, 150, 60, 60, "shape=ellipse;fillColor="+this_color);
 				for (String act : model.endActivities.get(ot).endpoints.keySet()) {
-					if (activityIndipendent.containsKey(act)) {
+					if (activityIndipendentString.containsKey(act)) {
 						Endpoint activity = model.endActivities.get(ot).endpoints.get(act);
 						if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
 							int value = activity.getValue();
 							int penwidth = 1 + (int)Math.floor(Math.log1p(value)/2.0);
-							Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.getSelectedIndex()), activityIndipendent.get(act), eaNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
+							Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.getSelectedIndex()), activityIndipendentString.get(act), eaNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
 						}
 					}
 				}
@@ -1020,10 +1023,10 @@ class VisualizationTab extends JPanel {
 		this.graphComponent = new mxGraphComponent(this.graph);
 		
 		this.scrollPane = new JScrollPane(this.graphComponent);
-		this.scrollPane.setPreferredSize(new Dimension(1824, 826));
+		this.scrollPane.setPreferredSize(new Dimension(1824, 756));
 		
-		this.scrollPane.getViewport().setMinimumSize(new Dimension(1824, 826));
-		this.scrollPane.getViewport().setPreferredSize(new Dimension(1824, 826));
+		this.scrollPane.getViewport().setMinimumSize(new Dimension(1824, 756));
+		this.scrollPane.getViewport().setPreferredSize(new Dimension(1824, 756));
 		
 		this.scrollPane.updateUI();
 		this.add(this.scrollPane);
@@ -1075,8 +1078,8 @@ class GraphMouseListener implements MouseListener {
 		Object cell = this.tab.graphComponent.getCellAt(e.getX(), e.getY());
 		
 		if (this.tab.invEdges.containsKey(cell)) {
-			System.out.println("clicked edge");
 			ModelEdge edge = this.tab.invEdges.get(cell);
+			System.out.println(edge.toString());
 			if (!this.tab.expandedModelEdges.contains(edge)) {
 				this.tab.expandedModelEdges.add(edge);
 				this.tab.doRepresentationWork();
@@ -1090,8 +1093,9 @@ class GraphMouseListener implements MouseListener {
 			this.tab.panel.edgeFilteringTab.setEdge(edge);
 		}
 		else if (this.tab.invActivityIndipendent.containsKey(cell)) {
-			System.out.println("clicked node (indipendent)");
-			String act = this.tab.invActivityIndipendent.get(cell);
+			ActivityOtIndipendent act0 = this.tab.invActivityIndipendent.get(cell);
+			System.out.println(act0.toString());
+			String act = act0.activity;
 			if (!this.tab.expandedActivities.contains(act)) {
 				this.tab.expandedActivities.add(act);
 				this.tab.doRepresentationWork();
@@ -1105,8 +1109,8 @@ class GraphMouseListener implements MouseListener {
 			this.tab.panel.activityFilteringTab.setActivityAndObjectType(act, null);
 		}
 		else if (this.tab.invActivityOtDependent.containsKey(cell)) {
-			System.out.println("cliked node (dependent)");
 			ActivityOtDependent actOt = this.tab.invActivityOtDependent.get(cell);
+			System.out.println(actOt.toString());
 			this.tab.panel.activityFilteringTab.setActivityAndObjectType(actOt.activity, actOt.objectType);
 		}
 	}
