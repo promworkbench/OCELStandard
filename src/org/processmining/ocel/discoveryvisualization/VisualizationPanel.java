@@ -901,7 +901,11 @@ class VisualizationTab extends JPanel {
 					height = 60;
 					label = activity.toReducedString(this.panel.controlTab.getSelectedIndex());
 				}
-				Object activityObject = graph.insertVertex(parent, activity.activity, label, 150, 150, width, height, "fontSize=18");
+				
+				int cc = 125 + 125*(this.model.MAX_INDIPENDENT_ACT_COUNT - activity.getValue(this.panel.controlTab.getSelectedIndex()))/(this.model.MAX_INDIPENDENT_ACT_COUNT - this.model.MIN_INDIPENDENT_ACT_COUNT);
+				String hex = String.format("#%02x%02x%02x", cc, cc, cc);
+				
+				Object activityObject = graph.insertVertex(parent, activity.activity, label, 150, 150, width, height, "fontSize=18;fillColor="+hex);
 				activityIndipendent.put(activity.activity, activityObject);
 				invActivityIndipendent.put(activityObject, activity.activity);
 				
