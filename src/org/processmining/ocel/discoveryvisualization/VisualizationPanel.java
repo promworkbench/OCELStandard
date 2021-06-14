@@ -454,6 +454,12 @@ class ActivityFilteringTab extends JPanel {
 	JButton filterNotRelatedObjectsFilter;
 	ActivityFilteringNotRelatedObjectsMouseListener notRelatedObjectsListener;
 	
+	JButton showRelatedObjects;
+	ShowRelatedObjectsMouseListener showRelatedObjectsMouseListener;
+	
+	JButton filterNumberRelatedObjects;
+	FilterNumberRelatedObjectsMouseListener filterNumberRelatedObjectsMouseListener;
+	
 	public ActivityFilteringTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
 		this.context = context;
 		this.model = model;
@@ -489,6 +495,18 @@ class ActivityFilteringTab extends JPanel {
 		this.add(this.filterNotRelatedObjectsFilter);
 		this.notRelatedObjectsListener = new ActivityFilteringNotRelatedObjectsMouseListener(this);
 		this.filterNotRelatedObjectsFilter.addMouseListener(this.notRelatedObjectsListener);
+		
+		this.showRelatedObjects = new JButton("Show Related Objects");
+		this.showRelatedObjects.setEnabled(false);
+		this.add(this.showRelatedObjects);
+		this.showRelatedObjectsMouseListener = new ShowRelatedObjectsMouseListener(this);
+		this.showRelatedObjects.addMouseListener(this.showRelatedObjectsMouseListener);
+		
+		this.filterNumberRelatedObjects = new JButton("Filter Number Rel.Obj.");
+		this.filterNumberRelatedObjects.setEnabled(false);
+		this.add(this.filterNumberRelatedObjects);
+		this.filterNumberRelatedObjectsMouseListener = new FilterNumberRelatedObjectsMouseListener(this);
+		this.filterNumberRelatedObjects.addMouseListener(this.filterNumberRelatedObjectsMouseListener);
 	}
 	
 	public void setActivityAndObjectType(String activity, OcelObjectType objectType) {
@@ -503,11 +521,15 @@ class ActivityFilteringTab extends JPanel {
 				this.startActivitiesFilter.setEnabled(true);
 				this.endActivitiesFilter.setEnabled(true);
 				this.filterNotRelatedObjectsFilter.setEnabled(true);
+				this.showRelatedObjects.setEnabled(true);
+				this.filterNumberRelatedObjects.setEnabled(true);
 			}
 			else {
 				this.startActivitiesFilter.setEnabled(false);
 				this.endActivitiesFilter.setEnabled(false);
 				this.filterNotRelatedObjectsFilter.setEnabled(false);
+				this.showRelatedObjects.setEnabled(false);
+				this.filterNumberRelatedObjects.setEnabled(false);
 			}
 		}
 	}
@@ -524,6 +546,81 @@ class ActivityFilteringTab extends JPanel {
 	public void changeModel(AnnotatedModel model) {
 		this.model = model;
 	}
+}
+
+class FilterNumberRelatedObjectsMouseListener implements MouseListener {
+	ActivityFilteringTab aft;
+
+	public FilterNumberRelatedObjectsMouseListener(ActivityFilteringTab aft) {
+		this.aft = aft;
+	}
+	
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if (this.aft.objectType != null) {
+			Integer minObj = Integer.parseInt(JOptionPane.showInputDialog("Insert the minimum number of related objects: "));
+			Integer maxObj = Integer.parseInt(JOptionPane.showInputDialog("Insert the maximum number of related objects: "));
+			AnnotatedModel filtered = this.aft.model.filterOnNumberRelatedObjects(this.aft.objectType, minObj, maxObj);
+			this.aft.panel.changeModel(filtered);
+		}
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+
+class ShowRelatedObjectsMouseListener implements MouseListener {
+	ActivityFilteringTab aft;
+
+	public ShowRelatedObjectsMouseListener(ActivityFilteringTab aft) {
+		this.aft = aft;
+	}
+	
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if (this.aft.activity != null && this.aft.objectType != null) {
+			String toDisplay = this.aft.panel.model.getStringRelatedObjectsTypeActivity(this.aft.activity, this.aft.objectType);
+			JOptionPane.showMessageDialog(null, toDisplay);
+		}
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
 
 class StartActivitiesFilterMouseListener implements MouseListener {
@@ -1023,10 +1120,14 @@ class VisualizationTab extends JPanel {
 		this.graphComponent = new ExtendedGraphComponent(this.panel, this.graph);
 		
 		this.scrollPane = new JScrollPane(this.graphComponent);
-		this.scrollPane.setPreferredSize(new Dimension(1824, 756));
 		
-		this.scrollPane.getViewport().setMinimumSize(new Dimension(1824, 756));
-		this.scrollPane.getViewport().setPreferredSize(new Dimension(1824, 756));
+		int x = 1880;
+		int y = 700;
+		
+		this.scrollPane.setPreferredSize(new Dimension(x, y));
+		
+		this.scrollPane.getViewport().setMinimumSize(new Dimension(x, y));
+		this.scrollPane.getViewport().setPreferredSize(new Dimension(x, y));
 		
 		this.scrollPane.updateUI();
 		this.add(this.scrollPane);

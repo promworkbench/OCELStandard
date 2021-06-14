@@ -10,6 +10,7 @@ import org.processmining.ocel.annotations.ActivityOtDependent;
 import org.processmining.ocel.annotations.ActivityOtIndipendent;
 import org.processmining.ocel.annotations.EdgesMeasures;
 import org.processmining.ocel.filtering.FilterNotRelatedObjects;
+import org.processmining.ocel.filtering.FilterNumberRelatedObjectsType;
 import org.processmining.ocel.filtering.FilterOnObjectTypes;
 import org.processmining.ocel.filtering.FilterOnRelatedObjects;
 import org.processmining.ocel.ocelobjects.OcelEvent;
@@ -213,5 +214,31 @@ public class AnnotatedModel {
 		ret.original = this.original;
 		ret.parent = this;
 		return ret;
+	}
+	
+	public AnnotatedModel filterOnNumberRelatedObjects(OcelObjectType type, int minOcc, int maxOcc) {
+		OcelEventLog filtered = FilterNumberRelatedObjectsType.apply(this.ocel, type, minOcc, maxOcc);
+		AnnotatedModel ret = new AnnotatedModel(filtered);
+		ret.original = this.original;
+		ret.parent = this;
+		return ret;
+	}
+	
+	public String getStringRelatedObjectsTypeActivity(String activity, OcelObjectType objectType) {
+		StringBuilder ret = new StringBuilder();
+		Set<OcelObject> consObjects = new HashSet<OcelObject>();
+		for (OcelEvent eve : this.ocel.events.values()) {
+			if (eve.activity.equals(activity)) {
+				for (OcelObject obj : eve.relatedObjects) {
+					if (obj.objectType.equals(objectType)) {
+						consObjects.add(obj);
+					}
+				}
+			}
+		}
+		for (OcelObject obj : consObjects) {
+			ret.append(" "+obj.id);
+		}
+		return ret.toString();
 	}
 }
