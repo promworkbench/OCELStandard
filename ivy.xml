@@ -14,7 +14,10 @@
        <dependency org="prom" name="Log" rev="latest" changing="true" transitive="true" />
        <dependency org="prom" name="LogAbstractions" rev="latest" changing="true" transitive="true" />
        <dependency org="prom" name="PetriNets" rev="latest" changing="true" transitive="true" />
+       <dependency org="prom" name="InductiveMiner" rev="latest" changing="true" transitive="true" />
        <dependency org="prom" name="XESLite" rev="latest" changing="true" transitive="true" />
+              <dependency org="prom" name="DataPetriNets" rev="latest" changing="true" transitive="true" />
+      
     	<dependency conf="lib->default" org="org.eclipse.collections" name="eclipse-collections" rev="9.2.0" />
     	<dependency conf="lib->default" org="org.apache.commons" name="commons-jexl3" rev="3.0" />
     	<dependency conf="lib->default" org="org.codehaus.groovy" name="groovy-all" rev="2.5.3" />
