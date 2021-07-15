@@ -48,6 +48,7 @@ public class TokenBasedReplay {
 			}
 			else {
 				TokenBasedReplayResultTrace replayedTrace = TokenBasedReplay.applyTokenBasedReplayToVariant(activities2, net, im, fm, invisiblesMap, transitionsMap, preMarkingDict, postMarkingDict);
+				System.out.println(replayedTrace.toString());
 				intermediateResults.put(activities2, replayedTrace);
 				traceResult.add(replayedTrace);
 			}
@@ -58,7 +59,6 @@ public class TokenBasedReplay {
 	
 	public static TokenBasedReplayResultTrace applyTokenBasedReplayToVariant(String var, PetrinetGraph net, Marking im, Marking fm, Map<Place, Map<Place, List<Transition>>> invisiblesDictionary, Map<String, Transition> transitionsMap, Map<Transition, Marking> preDict, Map<Transition, Marking> postDict) {
 		String[] activities = var.split(",");
-		TokenBasedReplayResultTrace ret = new TokenBasedReplayResultTrace();
 		Marking m = new Marking();
 		for (Place p : im) {
 			m.add(p, im.occurrences(p));
@@ -171,6 +171,55 @@ public class TokenBasedReplay {
 				missingActivitiesInModel.add(act);
 			}
 		}
+		
+		if (!TokenBasedReplay.markingEquals(m, fm)) {
+			Marking internalMarking = new Marking();
+			for (Place p : m) {
+				internalMarking.add(p, m.occurrences(p));
+			}
+			Integer internalConsumed = new Integer(consumed);
+			Integer internalProduced = new Integer(produced);
+			List<Transition> newVisitedTransitions = new ArrayList<Transition>(visitedTransitions);
+			while (!TokenBasedReplay.markingEquals(m, fm)) {
+				List<Transition> transList = TokenBasedReplay.reachFmThroughInvisibles(m, fm, invisiblesDictionary);
+				if (transList == null) {
+					break;
+				}
+				else {
+					for (Transition internalTrans : transList) {
+						Marking internalPreMarking = preDict.get(internalTrans);
+						Marking internalPostMarking = postDict.get(internalTrans);
+						Set<Transition> enabledTransitions = TokenBasedReplay.getEnabledTransitions(internalMarking, preDict);
+						if (enabledTransitions.contains(internalTrans)) {
+							newVisitedTransitions.add(internalTrans);
+							internalMarking = TokenBasedReplay.fireTransition(internalMarking, internalTrans, preDict, postDict);
+							for (Place p : internalPreMarking) {
+								internalConsumed += internalPreMarking.occurrences(p);
+								consumedPerPlace.put(p, consumedPerPlace.get(p) + internalPreMarking.occurrences(p));
+							}
+							for (Place p : internalPostMarking) {
+								internalProduced += internalPostMarking.occurrences(p);
+								producedPerPlace.put(p, producedPerPlace.get(p) + internalPostMarking.occurrences(p));
+							}
+						}
+						else {
+							transList = null;
+							break;
+						}
+					}
+					if (transList == null) {
+						break;
+					}
+				}
+				if (TokenBasedReplay.markingEquals(internalMarking, fm)) {
+					m = internalMarking;
+					consumed = internalConsumed;
+					produced = internalProduced;
+					visitedTransitions = newVisitedTransitions;
+				}
+			}
+		}
+		
 		for (Place place : fm) {
 			if (!(m.contains(place))) {
 				missing += fm.occurrences(place);
@@ -201,7 +250,45 @@ public class TokenBasedReplay {
 		}
 		Double fitness = 0.5*fitMC + 0.5*fitRP;
 		Boolean isFit = new Boolean(missingActivitiesInModel.size() == 0 && missing == 0);
+		TokenBasedReplayResultTrace ret = new TokenBasedReplayResultTrace(consumed, produced, missing, remaining, fitness, isFit, visitedTransitions, visitedMarkings, missingActivitiesInModel, consumedPerPlace, producedPerPlace, missingPerPlace, remainingPerPlace);
 		return ret;
+	}
+	
+	public static boolean markingEquals(Marking m1, Marking m2) {
+		for (Place p : m1) {
+			if (!(m2.contains(p)) || m2.occurrences(p) != m1.occurrences(p)) {
+				return false;
+			}
+		}
+		for (Place p : m2) {
+			if (!(m1.contains(p)) || m2.occurrences(p) != m1.occurrences(p)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public static List<Transition> reachFmThroughInvisibles(Marking marking, Marking finalMarking, Map<Place, Map<Place, List<Transition>>> invisiblesDictionary) {
+		Set<Place> diff1 = new HashSet<Place>();
+		Set<Place> diff2 = new HashSet<Place>();
+		for (Place p : marking) {
+			if (!(finalMarking.contains(p))) {
+				diff1.add(p);
+			}
+		}
+		for (Place p : finalMarking) {
+			if (!(marking.contains(p)) || marking.occurrences(p) < finalMarking.occurrences(p)) {
+				diff2.add(p);
+			}
+ 		}
+		for (Place p : diff1) {
+			for (Place p2 : diff2) {
+				if (invisiblesDictionary.get(p).containsKey(p2)) {
+					return invisiblesDictionary.get(p).get(p2);
+				}
+			}
+		}
+		return null;
 	}
 	
 	public static List<Transition> enableTransThroughInvisibles(Marking marking, Marking preMarking, Map<Place, Map<Place, List<Transition>>> invisiblesDictionary) {
