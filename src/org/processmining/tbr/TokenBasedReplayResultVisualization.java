@@ -3,14 +3,33 @@ package org.processmining.tbr;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JPanel;
+
+import org.processmining.contexts.uitopia.annotations.Visualizer;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.annotations.Plugin;
+import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetEdge;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetNode;
 import org.processmining.models.graphbased.directed.petrinet.elements.Place;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.models.semantics.petrinet.Marking;
+import org.processmining.plugins.graphviz.dot.Dot;
+import org.processmining.plugins.graphviz.visualisation.DotPanel;
 
+@Plugin(name = "Petri Net with TBR result projected", parameterLabels = { "TokenBasedReplayResultLog" }, returnLabels = { "JPanel" }, returnTypes = { JPanel.class })
+@Visualizer
 public class TokenBasedReplayResultVisualization {
+	@PluginVariant(requiredParameterLabels = { 0 })
+	public static DotPanel apply(PluginContext context, TokenBasedReplayResultLog tbrResults) {
+		String gv = TokenBasedReplayResultVisualization.getGraphviz(tbrResults);
+		Dot dot = new Dot();
+		dot.setStringValue(gv);
+		DotPanel panel = new DotPanel(dot);
+		return panel;
+	}
+	
 	public static Double[] rgbColor(double percent) {
 		Double[] ret = new Double[3];
 		ret[0] = 255*percent;

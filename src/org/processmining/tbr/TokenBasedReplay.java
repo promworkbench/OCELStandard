@@ -12,6 +12,11 @@ import org.deckfour.xes.model.XAttributeMap;
 import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
+import org.processmining.acceptingpetrinet.models.AcceptingPetriNet;
+import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.annotations.Plugin;
+import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetEdge;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetNode;
@@ -19,7 +24,20 @@ import org.processmining.models.graphbased.directed.petrinet.elements.Place;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.models.semantics.petrinet.Marking;
 
+@Plugin(name = "Perform Token-Based Replay",
+returnLabels = { "Token-Based Replay" },
+returnTypes = { TokenBasedReplayResultLog.class },
+parameterLabels = { "Event log", "Accepting Petri net" },
+help = "Token-Based Replay",
+userAccessible = true)
 public class TokenBasedReplay {
+	@PluginVariant(requiredParameterLabels = { 0, 1 })
+	@UITopiaVariant(affiliation = "PADS RWTH", author = "Alessandro Berti", email = "a.berti@pads.rwth-aachen.de")
+	public static TokenBasedReplayResultLog apply(PluginContext context, XLog log, AcceptingPetriNet acceptingPetriNet) {
+		List<Marking> finalMarkings = new ArrayList<Marking>(acceptingPetriNet.getFinalMarkings());
+		return TokenBasedReplay.applyTokenBasedReplay(log, acceptingPetriNet.getNet(), acceptingPetriNet.getInitialMarking(), finalMarkings.get(0), "concept:name");
+	}
+	
 	public static TokenBasedReplayResultLog applyTokenBasedReplay(XLog log, PetrinetGraph net, Marking im, Marking fm, String activityKey) {
 		Map<Place, Map<Place, List<Transition>>> invisiblesMap = TokenBasedReplay.getInvisiblesDictionary(net);
 		Map<String, Transition> transitionsMap = new HashMap<String, Transition>();
