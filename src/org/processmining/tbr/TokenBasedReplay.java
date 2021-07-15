@@ -124,6 +124,9 @@ public class TokenBasedReplay {
 					}
 					Integer internalConsumed = new Integer(consumed);
 					Integer internalProduced = new Integer(produced);
+					Map<Place, Integer> internalConsumedPerPlace = new HashMap<Place, Integer>(consumedPerPlace);
+					Map<Place, Integer> internalProducedPerPlace = new HashMap<Place, Integer>(producedPerPlace);
+
 					while (!(enabledTransitions.contains(trans))) {
 						List<Transition> transList = TokenBasedReplay.enableTransThroughInvisibles(internalMarking, preMarking, invisiblesDictionary);
 						if (transList == null) {
@@ -134,17 +137,17 @@ public class TokenBasedReplay {
 								Marking internalTransPreMarking = preDict.get(internalTrans);
 								Marking internalTransPostMarking = postDict.get(internalTrans);
 								Set<Transition> internalEnabledTrans = TokenBasedReplay.getEnabledTransitions(internalMarking, preDict);
-								
+
 								if (internalEnabledTrans.contains(internalTrans)) {
 									newVisitedTransitions.add(internalTrans);
 									internalMarking = TokenBasedReplay.fireTransition(internalMarking, internalTrans, preDict, postDict);
 									for (Place p : internalTransPreMarking.baseSet()) {
 										internalConsumed += internalTransPreMarking.occurrences(p);
-										consumedPerPlace.put(p, consumedPerPlace.get(p) + internalTransPreMarking.occurrences(p));
+										internalConsumedPerPlace.put(p, internalConsumedPerPlace.get(p) + internalTransPreMarking.occurrences(p));
 									}
 									for (Place p : internalTransPostMarking.baseSet()) {
 										internalProduced += internalTransPostMarking.occurrences(p);
-										producedPerPlace.put(p, producedPerPlace.get(p) + internalTransPostMarking.occurrences(p));
+										internalProducedPerPlace.put(p, internalProducedPerPlace.get(p) + internalTransPostMarking.occurrences(p));
 									}
 								}
 								else {
@@ -163,6 +166,8 @@ public class TokenBasedReplay {
 						consumed = internalConsumed;
 						produced = internalProduced;
 						visitedTransitions = newVisitedTransitions;
+						producedPerPlace = internalProducedPerPlace;
+						consumedPerPlace = internalConsumedPerPlace;
 					}
 				}
 				if (!(enabledTransitions.contains(trans))) {
@@ -203,6 +208,9 @@ public class TokenBasedReplay {
 			Integer internalConsumed = new Integer(consumed);
 			Integer internalProduced = new Integer(produced);
 			List<Transition> newVisitedTransitions = new ArrayList<Transition>(visitedTransitions);
+			Map<Place, Integer> internalConsumedPerPlace = new HashMap<Place, Integer>(consumedPerPlace);
+			Map<Place, Integer> internalProducedPerPlace = new HashMap<Place, Integer>(producedPerPlace);
+			
 			while (!TokenBasedReplay.markingEquals(m, fm)) {
 				List<Transition> transList = TokenBasedReplay.reachFmThroughInvisibles(m, fm, invisiblesDictionary);
 				if (transList == null) {
@@ -218,11 +226,11 @@ public class TokenBasedReplay {
 							internalMarking = TokenBasedReplay.fireTransition(internalMarking, internalTrans, preDict, postDict);
 							for (Place p : internalPreMarking.baseSet()) {
 								internalConsumed += internalPreMarking.occurrences(p);
-								consumedPerPlace.put(p, consumedPerPlace.get(p) + internalPreMarking.occurrences(p));
+								internalConsumedPerPlace.put(p, internalConsumedPerPlace.get(p) + internalPreMarking.occurrences(p));
 							}
 							for (Place p : internalPostMarking.baseSet()) {
 								internalProduced += internalPostMarking.occurrences(p);
-								producedPerPlace.put(p, producedPerPlace.get(p) + internalPostMarking.occurrences(p));
+								internalProducedPerPlace.put(p, internalProducedPerPlace.get(p) + internalPostMarking.occurrences(p));
 							}
 						}
 						else {
@@ -239,6 +247,8 @@ public class TokenBasedReplay {
 					consumed = internalConsumed;
 					produced = internalProduced;
 					visitedTransitions = newVisitedTransitions;
+					producedPerPlace = internalProducedPerPlace;
+					consumedPerPlace = internalConsumedPerPlace;
 				}
 			}
 		}
