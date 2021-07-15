@@ -82,7 +82,7 @@ public class TokenBasedReplay {
 	public static TokenBasedReplayResultTrace applyTokenBasedReplayToVariant(String var, PetrinetGraph net, Marking im, Marking fm, Map<Place, Map<Place, List<Transition>>> invisiblesDictionary, Map<String, Transition> transitionsMap, Map<Transition, Marking> preDict, Map<Transition, Marking> postDict) {
 		String[] activities = var.split(",");
 		Marking m = new Marking();
-		for (Place p : im) {
+		for (Place p : im.baseSet()) {
 			m.add(p, im.occurrences(p));
 		}
 		int consumed = 0;
@@ -99,11 +99,11 @@ public class TokenBasedReplay {
 			missingPerPlace.put(p, 0);
 			remainingPerPlace.put(p, 0);
 		}
-		for (Place p : im) {
+		for (Place p : im.baseSet()) {
 			produced += im.occurrences(p);
 			producedPerPlace.put(p, producedPerPlace.get(p)+im.occurrences(p));
 		}
-		for (Place p : fm) {
+		for (Place p : fm.baseSet()) {
 			consumed += fm.occurrences(p);
 			consumedPerPlace.put(p, consumedPerPlace.get(p)+fm.occurrences(p));
 		}
@@ -119,7 +119,7 @@ public class TokenBasedReplay {
 				if (!(enabledTransitions.contains(trans))) {
 					List<Transition> newVisitedTransitions = new ArrayList<Transition>(visitedTransitions);
 					Marking internalMarking = new Marking();
-					for (Place p : m) {
+					for (Place p : m.baseSet()) {
 						internalMarking.add(p, m.occurrences(p));
 					}
 					Integer internalConsumed = new Integer(consumed);
@@ -134,14 +134,23 @@ public class TokenBasedReplay {
 								Marking internalTransPreMarking = preDict.get(internalTrans);
 								Marking internalTransPostMarking = postDict.get(internalTrans);
 								Set<Transition> internalEnabledTrans = TokenBasedReplay.getEnabledTransitions(internalMarking, preDict);
+								
 								if (internalEnabledTrans.contains(internalTrans)) {
 									newVisitedTransitions.add(internalTrans);
+									/*System.out.println("");
+									System.out.println(internalEnabledTrans);
+									System.out.println(internalTrans);
+									System.out.println(internalMarking);
+									System.out.println("pp");
+									System.out.println(internalTransPreMarking);
+									System.out.println(internalTransPostMarking);*/
 									internalMarking = TokenBasedReplay.fireTransition(internalMarking, internalTrans, preDict, postDict);
-									for (Place p : internalTransPreMarking) {
+									//System.out.println(internalMarking);
+									for (Place p : internalTransPreMarking.baseSet()) {
 										internalConsumed += internalTransPreMarking.occurrences(p);
 										consumedPerPlace.put(p, consumedPerPlace.get(p) + internalTransPreMarking.occurrences(p));
 									}
-									for (Place p : internalTransPostMarking) {
+									for (Place p : internalTransPostMarking.baseSet()) {
 										internalProduced += internalTransPostMarking.occurrences(p);
 										producedPerPlace.put(p, producedPerPlace.get(p) + internalTransPostMarking.occurrences(p));
 									}
@@ -165,7 +174,7 @@ public class TokenBasedReplay {
 					}
 				}
 				if (!(enabledTransitions.contains(trans))) {
-					for (Place p : preMarking) {
+					for (Place p : preMarking.baseSet()) {
 						Integer diff = preMarking.occurrences(p);
 						if (m.contains(p)) {
 							diff -= m.occurrences(p);
@@ -177,11 +186,11 @@ public class TokenBasedReplay {
 						}
 					}
 				}
-				for (Place p : preMarking) {
+				for (Place p : preMarking.baseSet()) {
 					consumed += preMarking.occurrences(p);
 					consumedPerPlace.put(p, consumedPerPlace.get(p) + preMarking.occurrences(p));
 				}
-				for (Place p : postMarking) {
+				for (Place p : postMarking.baseSet()) {
 					produced += postMarking.occurrences(p);
 					producedPerPlace.put(p, producedPerPlace.get(p) + postMarking.occurrences(p));
 				}
@@ -196,7 +205,7 @@ public class TokenBasedReplay {
 		
 		if (!TokenBasedReplay.markingEquals(m, fm)) {
 			Marking internalMarking = new Marking();
-			for (Place p : m) {
+			for (Place p : m.baseSet()) {
 				internalMarking.add(p, m.occurrences(p));
 			}
 			Integer internalConsumed = new Integer(consumed);
@@ -215,11 +224,11 @@ public class TokenBasedReplay {
 						if (enabledTransitions.contains(internalTrans)) {
 							newVisitedTransitions.add(internalTrans);
 							internalMarking = TokenBasedReplay.fireTransition(internalMarking, internalTrans, preDict, postDict);
-							for (Place p : internalPreMarking) {
+							for (Place p : internalPreMarking.baseSet()) {
 								internalConsumed += internalPreMarking.occurrences(p);
 								consumedPerPlace.put(p, consumedPerPlace.get(p) + internalPreMarking.occurrences(p));
 							}
-							for (Place p : internalPostMarking) {
+							for (Place p : internalPostMarking.baseSet()) {
 								internalProduced += internalPostMarking.occurrences(p);
 								producedPerPlace.put(p, producedPerPlace.get(p) + internalPostMarking.occurrences(p));
 							}
@@ -242,7 +251,7 @@ public class TokenBasedReplay {
 			}
 		}
 		
-		for (Place place : fm) {
+		for (Place place : fm.baseSet()) {
 			if (!(m.contains(place))) {
 				missing += fm.occurrences(place);
 				missingPerPlace.put(place, missingPerPlace.get(place) + fm.occurrences(place));
@@ -252,7 +261,7 @@ public class TokenBasedReplay {
 				missingPerPlace.put(place, missingPerPlace.get(place) + fm.occurrences(place) - m.occurrences(place));
 			}
 		}
-		for (Place place : m) {
+		for (Place place : m.baseSet()) {
 			if (!(fm.contains(place))) {
 				remaining += m.occurrences(place);
 				remainingPerPlace.put(place, remainingPerPlace.get(place) + m.occurrences(place));
@@ -273,6 +282,7 @@ public class TokenBasedReplay {
 		Double fitness = 0.5*fitMC + 0.5*fitRP;
 		Boolean isFit = new Boolean(missingActivitiesInModel.size() == 0 && missing == 0);
 		TokenBasedReplayResultTrace ret = new TokenBasedReplayResultTrace(consumed, produced, missing, remaining, fitness, isFit, visitedTransitions, visitedMarkings, missingActivitiesInModel, consumedPerPlace, producedPerPlace, missingPerPlace, remainingPerPlace);
+		System.out.println(ret);
 		return ret;
 	}
 	
@@ -339,11 +349,15 @@ public class TokenBasedReplay {
 	public static Set<Transition> getEnabledTransitions(Marking m, Map<Transition, Marking> preDict) {
 		Set<Transition> enabledTransitions = new HashSet<Transition>();
 		for (Transition t : preDict.keySet()) {
+			boolean isOk = true;
 			Marking preMarking = preDict.get(t);
 			for (Place p : preMarking) {
-				if (m.contains(p) && preMarking.occurrences(p) <= m.occurrences(p)) {
-					enabledTransitions.add(t);
+				if (!(m.contains(p) && preMarking.occurrences(p) <= m.occurrences(p))) {
+					isOk = false;
 				}
+			}
+			if (isOk) {
+				enabledTransitions.add(t);
 			}
 		}
 		return enabledTransitions;
@@ -353,24 +367,17 @@ public class TokenBasedReplay {
 		Marking preMarking = preDict.get(t);
 		Marking postMarking = postDict.get(t);
 		Marking ret = new Marking();
-		for (Place p : preMarking) {
+		for (Place p : preMarking.baseSet()) {
 			if (!(m.contains(p)) || m.occurrences(p) < preMarking.occurrences(p)) {
 				return null;
 			}
 		}
-		for (Place p : postMarking) {
+		for (Place p : postMarking.baseSet()) {
 			ret.add(p, postMarking.occurrences(p));
 		}
-		for (Place p : m) {
+		for (Place p : m.baseSet()) {
 			if (m.occurrences(p) > preMarking.occurrences(p)) {
-				if (!(ret.contains(p))) {
-					ret.add(p, m.occurrences(p) - preMarking.occurrences(p));
-				}
-				else {
-					Integer occ = ret.occurrences(p);
-					ret.remove(p);
-					ret.add(p, occ + m.occurrences(p) - preMarking.occurrences(p));
-				}
+				ret.add(p, m.occurrences(p) - preMarking.occurrences(p));
 			}
 		}
 		return ret;

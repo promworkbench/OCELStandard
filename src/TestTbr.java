@@ -11,7 +11,7 @@ public class TestTbr {
 	public static void main(String[] args) {
 		Object[] petriImFm = null;
 		try {
-			petriImFm = PetriNetUtils.importFromFile("C:/receipt.pnml");
+			petriImFm = PetriNetUtils.importFromFile("C:/receipt_prom.pnml");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
