@@ -137,15 +137,7 @@ public class TokenBasedReplay {
 								
 								if (internalEnabledTrans.contains(internalTrans)) {
 									newVisitedTransitions.add(internalTrans);
-									/*System.out.println("");
-									System.out.println(internalEnabledTrans);
-									System.out.println(internalTrans);
-									System.out.println(internalMarking);
-									System.out.println("pp");
-									System.out.println(internalTransPreMarking);
-									System.out.println(internalTransPostMarking);*/
 									internalMarking = TokenBasedReplay.fireTransition(internalMarking, internalTrans, preDict, postDict);
-									//System.out.println(internalMarking);
 									for (Place p : internalTransPreMarking.baseSet()) {
 										internalConsumed += internalTransPreMarking.occurrences(p);
 										consumedPerPlace.put(p, consumedPerPlace.get(p) + internalTransPreMarking.occurrences(p));
@@ -282,7 +274,6 @@ public class TokenBasedReplay {
 		Double fitness = 0.5*fitMC + 0.5*fitRP;
 		Boolean isFit = new Boolean(missingActivitiesInModel.size() == 0 && missing == 0);
 		TokenBasedReplayResultTrace ret = new TokenBasedReplayResultTrace(consumed, produced, missing, remaining, fitness, isFit, visitedTransitions, visitedMarkings, missingActivitiesInModel, consumedPerPlace, producedPerPlace, missingPerPlace, remainingPerPlace);
-		System.out.println(ret);
 		return ret;
 	}
 	
