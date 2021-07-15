@@ -20,7 +20,7 @@ import org.processmining.models.graphbased.directed.petrinet.elements.Transition
 import org.processmining.models.semantics.petrinet.Marking;
 
 public class TokenBasedReplay {
-	public static TokenBasedReplayResultLog applyTokenBasedReplay(XLog log, PetrinetGraph net, Marking im, Marking fm) {
+	public static TokenBasedReplayResultLog applyTokenBasedReplay(XLog log, PetrinetGraph net, Marking im, Marking fm, String activityKey) {
 		Map<Place, Map<Place, List<Transition>>> invisiblesMap = TokenBasedReplay.getInvisiblesDictionary(net);
 		Map<String, Transition> transitionsMap = new HashMap<String, Transition>();
 		for (Transition t : net.getTransitions()) {
@@ -40,7 +40,7 @@ public class TokenBasedReplay {
 				if (activities.length() > 0) {
 					activities.append(",");
 				}
-				activities.append(attributeMap.get("concept:name").toString());
+				activities.append(attributeMap.get(activityKey).toString());
 			}
 			String activities2 = activities.toString();
 			if (intermediateResults.containsKey(activities2)) {
@@ -48,12 +48,16 @@ public class TokenBasedReplay {
 			}
 			else {
 				TokenBasedReplayResultTrace replayedTrace = TokenBasedReplay.applyTokenBasedReplayToVariant(activities2, net, im, fm, invisiblesMap, transitionsMap, preMarkingDict, postMarkingDict);
-				System.out.println(replayedTrace.toString());
 				intermediateResults.put(activities2, replayedTrace);
 				traceResult.add(replayedTrace);
 			}
 		}
-		TokenBasedReplayResultLog ret = new TokenBasedReplayResultLog();
+		Object[] netImFm = new Object[3];
+		netImFm[0] = net;
+		netImFm[1] = im;
+		netImFm[2] = fm;
+		TokenBasedReplayResultLog ret = new TokenBasedReplayResultLog(traceResult, netImFm);
+		System.out.println(ret.toString());
 		return ret;
 	}
 	
@@ -157,11 +161,11 @@ public class TokenBasedReplay {
 				}
 				for (Place p : preMarking) {
 					consumed += preMarking.occurrences(p);
-					consumedPerPlace.put(p, consumedPerPlace.get(p) + consumed);
+					consumedPerPlace.put(p, consumedPerPlace.get(p) + preMarking.occurrences(p));
 				}
 				for (Place p : postMarking) {
 					produced += postMarking.occurrences(p);
-					producedPerPlace.put(p, producedPerPlace.get(p) + produced);
+					producedPerPlace.put(p, producedPerPlace.get(p) + postMarking.occurrences(p));
 				}
 				m = TokenBasedReplay.fireTransition(m, trans, preDict, postDict);
 				visitedMarkings.add(m);

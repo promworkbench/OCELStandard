@@ -9,19 +9,19 @@ import org.processmining.models.graphbased.directed.petrinet.elements.Transition
 import org.processmining.models.semantics.petrinet.Marking;
 
 public class TokenBasedReplayResultTrace {
-	int consumed;
-	int produced;
-	int missing;
-	int remaining;
-	Double fitness;
-	Boolean isFit;
-	List<Transition> visitedTransitions;
-	List<Marking> visitedMarkings;
-	Set<String> missingActivitiesInModel;
-	Map<Place, Integer> consumedPerPlace;
-	Map<Place, Integer> producedPerPlace;
-	Map<Place, Integer> missingPerPlace;
-	Map<Place, Integer> remainingPerPlace;
+	public int consumed;
+	public int produced;
+	public int missing;
+	public int remaining;
+	public Double fitness;
+	public Boolean isFit;
+	public List<Transition> visitedTransitions;
+	public List<Marking> visitedMarkings;
+	public Set<String> missingActivitiesInModel;
+	public Map<Place, Integer> consumedPerPlace;
+	public Map<Place, Integer> producedPerPlace;
+	public Map<Place, Integer> missingPerPlace;
+	public Map<Place, Integer> remainingPerPlace;
 	
 	public TokenBasedReplayResultTrace(int consumed, int produced, int missing, int remaining, Double fitness, Boolean isFit, List<Transition> visitedTransitions, List<Marking> visitedMarkings, Set<String> missingActivitiesInModel, Map<Place, Integer> consumedPerPlace, Map<Place, Integer> producedPerPlace, Map<Place, Integer> missingPerPlace, Map<Place, Integer> remainingPerPlace) {
 		this.consumed = consumed;

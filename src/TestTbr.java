@@ -4,6 +4,8 @@ import org.processmining.models.semantics.petrinet.Marking;
 import org.processmining.tbr.LogStaticReadingUtils;
 import org.processmining.tbr.PetriNetUtils;
 import org.processmining.tbr.TokenBasedReplay;
+import org.processmining.tbr.TokenBasedReplayResultLog;
+import org.processmining.tbr.TokenBasedReplayResultVisualization;
 
 public class TestTbr {
 	public static void main(String[] args) {
@@ -24,6 +26,8 @@ public class TestTbr {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		TokenBasedReplay.applyTokenBasedReplay(log, net, im, fm);
+		TokenBasedReplayResultLog result = TokenBasedReplay.applyTokenBasedReplay(log, net, im, fm, "concept:name");
+		String gv = TokenBasedReplayResultVisualization.getGraphviz(result);
+		System.out.println(gv);
 	}
 }
