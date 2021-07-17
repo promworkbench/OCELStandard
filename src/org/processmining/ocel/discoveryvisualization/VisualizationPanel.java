@@ -1065,7 +1065,7 @@ class VisualizationTab extends JPanel {
 				for (Place place : tv.net.getPlaces()) {
 					String placeLabel = "p="+tv.tbrResults.totalProducedPerPlace.get(place);
 					placeLabel += ";m="+tv.tbrResults.totalMissingPerPlace.get(place);
-					placeLabel += "\n;c="+tv.tbrResults.totalConsumedPerPlace.get(place);
+					placeLabel += ";\nc="+tv.tbrResults.totalConsumedPerPlace.get(place);
 					placeLabel += ";r="+tv.tbrResults.totalRemainingPerPlace.get(place);
 					int placeSizeX = 90;
 					int placeSizeY = 90;
@@ -1126,7 +1126,7 @@ class VisualizationTab extends JPanel {
 							}						
 						}
 					}
-					String edgeLabel = "TO"+tv.tbrResults.arcExecutions.get(arc);
+					String edgeLabel = "TO="+tv.tbrResults.arcExecutions.get(arc);
 					String strokeWidth = "1";
 					if (isDouble) {
 						strokeWidth = "3";
