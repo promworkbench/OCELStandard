@@ -1,15 +1,13 @@
+import java.util.HashSet;
+import java.util.Set;
+
 import org.deckfour.xes.model.XLog;
-import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
-import org.processmining.models.semantics.petrinet.Marking;
+import org.processmining.ocel.replay.ReplayView;
 import org.processmining.tbr.LogStaticReadingUtils;
-import org.processmining.tbr.PetriNetUtils;
-import org.processmining.tbr.TokenBasedReplay;
-import org.processmining.tbr.TokenBasedReplayResultLog;
-import org.processmining.tbr.TokenBasedReplayResultVisualization;
 
 public class TestTbr {
 	public static void main(String[] args) {
-		Object[] petriImFm = null;
+		/*Object[] petriImFm = null;
 		try {
 			petriImFm = PetriNetUtils.importFromFile("C:/receipt_prom.pnml");
 		} catch (Exception e) {
@@ -28,6 +26,21 @@ public class TestTbr {
 		}
 		TokenBasedReplayResultLog result = TokenBasedReplay.applyTokenBasedReplay(log, net, im, fm, "concept:name");
 		String gv = TokenBasedReplayResultVisualization.getGraphviz(result);
-		System.out.println(gv);
+		System.out.println(gv);*/
+		XLog log = null;
+		try {
+			log = LogStaticReadingUtils.readSingleLog("C:/receipt.xes");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Set<String> activities = new HashSet<String>();
+		activities.add("Confirmation of receipt");
+		ReplayView replayView = new ReplayView(log, activities);
+		System.out.println(replayView.net.getPlaces());
+		System.out.println(replayView.im);
+		System.out.println(replayView.fm);
+		System.out.println(replayView.tbrResults.totalConsumed + replayView.tbrResults.totalRemaining);
+		System.out.println(replayView.tbrResults.totalProduced + replayView.tbrResults.totalMissing);
 	}
 }
