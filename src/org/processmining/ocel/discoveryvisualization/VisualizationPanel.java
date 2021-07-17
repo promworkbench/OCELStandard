@@ -111,6 +111,10 @@ class ControlTab extends JPanel {
 	JButton resetFilters;
 	ResetFiltersMouseListener resetFiltersMouseListener;
 	
+	String[] modelTypes = { "OC-DFG", "OC-Petri Nets" };
+	JComboBox modelTypeSelection;
+	JLabel modelTypeSelectionLabel;
+	
 	String[] syntheticMetrics = { "Events", "Unique Objects", "Total Objects" };
 	JComboBox syntheticMetricsSelection;
 	JLabel syntheticMetricsSelectionLabel;
@@ -143,11 +147,24 @@ class ControlTab extends JPanel {
 		}
 	}
 	
+	public String getSelectedModelType() {
+		return this.modelTypes[this.modelTypeSelection.getSelectedIndex()];
+	}
+	
 	public ControlTab(PluginContext context, AnnotatedModel model, VisualizationPanel panel) {
 		this.context = context;
 		this.model = model;
 		this.panel = panel;
 		this.sliderChange = new SliderChange(context, panel);
+		
+		/*	JComboBox modelTypeSelection;
+	JLabel modelTypeSelectionLabel;*/
+		
+		this.modelTypeSelectionLabel = new JLabel("Model: ");
+		this.add(this.modelTypeSelectionLabel);
+		this.modelTypeSelection = new JComboBox(modelTypes);
+		this.modelTypeSelection.setSelectedIndex(0);
+		this.add(this.modelTypeSelection);
 		
 		this.syntheticMetricsSelectionLabel = new JLabel("Metric:");
 		this.add(this.syntheticMetricsSelectionLabel);
@@ -156,6 +173,7 @@ class ControlTab extends JPanel {
 		this.add(syntheticMetricsSelection);
 		this.metricsActionListener = new MetricsActionListener(this);
 		this.syntheticMetricsSelection.addActionListener(this.metricsActionListener);
+		this.modelTypeSelection.addActionListener(this.metricsActionListener);
 		
 		this.actSlider = SlickerFactory.instance().createNiceDoubleSlider("% Activities", 0.0, 1.0, 0.2, Orientation.HORIZONTAL);
 		this.edgesSlider = SlickerFactory.instance().createNiceDoubleSlider("% Paths", 0.0, 1.0, 0.2, Orientation.HORIZONTAL);
@@ -1029,7 +1047,7 @@ class VisualizationTab extends JPanel {
 			}
 		}
 		
-		if (true) {
+		if (this.panel.controlTab.getSelectedModelType().equals("OC-Petri Nets")) {
 			Map<PetrinetNode, Object> petriNetPlacesToObjects = new HashMap<PetrinetNode, Object>();
 			Map<Object, PetrinetNode> invPetriNetPlacesToObjects = new HashMap<Object, PetrinetNode>();
 			Map<PetrinetNode, Object> petriNetTransToObjects = new HashMap<PetrinetNode, Object>();
@@ -1118,7 +1136,7 @@ class VisualizationTab extends JPanel {
 			}
 			
 		}
-		else {
+		else if (this.panel.controlTab.getSelectedModelType().equals("OC-DFG")) {
 			for (ModelEdge edge : model.edgesMeasures.keySet()) {
 				String act1 = edge.sourceActivity;
 				String act2 = edge.targetActivity;
