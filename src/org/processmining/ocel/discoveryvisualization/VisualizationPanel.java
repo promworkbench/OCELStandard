@@ -29,8 +29,10 @@ import org.processmining.framework.packages.PackageDescriptor;
 import org.processmining.framework.packages.PackageDescriptor.OS;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.PluginDescriptor;
+import org.processmining.models.graphbased.directed.petrinet.PetrinetEdge;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetNode;
 import org.processmining.models.graphbased.directed.petrinet.elements.Place;
+import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.ocel.annotations.ActivityOtDependent;
 import org.processmining.ocel.annotations.ActivityOtIndipendent;
 import org.processmining.ocel.annotations.EdgesMeasures;
@@ -1028,6 +1030,10 @@ class VisualizationTab extends JPanel {
 		}
 		
 		if (true) {
+			Map<PetrinetNode, Object> petriNetPlacesToObjects = new HashMap<PetrinetNode, Object>();
+			Map<Object, PetrinetNode> invPetriNetPlacesToObjects = new HashMap<Object, PetrinetNode>();
+			Map<PetrinetNode, Object> petriNetTransToObjects = new HashMap<PetrinetNode, Object>();
+			Map<Object, PetrinetNode> invPetriNetTransToObjects = new HashMap<Object, PetrinetNode>();
 			Set<String> tbrActivities = new HashSet<String>();
 			Map<String, ActivityOtIndipendent> actNameToActObj = new HashMap<String, ActivityOtIndipendent>();
 			for (ActivityOtIndipendent act : activityIndipendent.keySet()) {
@@ -1038,7 +1044,6 @@ class VisualizationTab extends JPanel {
 			for (OcelObjectType ot : modelWithTbrResults.replayViews.keySet()) {
 				String this_color = getColorFromString(ot.name);
 				ReplayView tv = modelWithTbrResults.replayViews.get(ot);
-				Map<PetrinetNode, Object> petriNetNodesToObjects = new HashMap<PetrinetNode, Object>();
 				for (Place place : tv.net.getPlaces()) {
 					String placeLabel = "p="+tv.tbrResults.totalProducedPerPlace.get(place);
 					placeLabel += ";m="+tv.tbrResults.totalMissingPerPlace.get(place);
@@ -1052,6 +1057,63 @@ class VisualizationTab extends JPanel {
 						placeSizeY = 40;
 					}
 					Object placeNode = this.graph.insertVertex(parent, "netPlace@@"+place.getId().toString(), placeLabel, 150, 150, placeSizeX, placeSizeY, "fontSize=11;shape=ellipse;fillColor="+this_color+";fontColor=white");
+					petriNetPlacesToObjects.put(place, placeNode);
+					invPetriNetPlacesToObjects.put(placeNode, place);
+				}
+				for (Transition tr : tv.net.getTransitions()) {
+					Object transNode = null;
+					if (tr.isInvisible()) {
+						transNode = this.graph.insertVertex(parent, "netTrans@@"+tr.getId().toString(), "tau", 150, 150, 90, 60, "fillColor="+this_color+";fontColor=white;fontSize=11");
+					}
+					else {
+						transNode = null;
+						for (ActivityOtIndipendent aa : this.activityIndipendent.keySet()) {
+							if (aa.activity.equals(tr.getLabel())) {
+								transNode = this.activityIndipendent.get(aa);
+							}
+						}
+					}
+					petriNetTransToObjects.put(tr, transNode);
+					invPetriNetTransToObjects.put(transNode, tr);
+				}
+				for (PetrinetEdge<? extends PetrinetNode, ? extends PetrinetNode> arc : tv.tbrResults.arcExecutions.keySet()) {
+					Object source = null;
+					Object target = null;
+					boolean isDouble = false;
+					if (petriNetPlacesToObjects.containsKey(arc.getSource())) {
+						source = petriNetPlacesToObjects.get(arc.getSource());
+						target = petriNetTransToObjects.get(arc.getTarget());
+						Transition transition = (Transition)arc.getTarget();
+						if (!(transition.isInvisible())) {
+							String label = transition.getLabel();
+							ActivityOtDependent nodeMeasures = this.model.dependentNodeMeasures.get(label).get(ot.name);
+							int numEvents = nodeMeasures.getValue(0);
+							int numObjects = nodeMeasures.getValue(1);
+							if (numObjects > numEvents) {
+								isDouble = true;
+							}
+						}
+					}
+					else {
+						source = petriNetTransToObjects.get(arc.getSource());
+						target = petriNetPlacesToObjects.get(arc.getTarget());
+						Transition transition = (Transition)arc.getSource();
+						if (!(transition.isInvisible())) {
+							String label = transition.getLabel();
+							ActivityOtDependent nodeMeasures = this.model.dependentNodeMeasures.get(label).get(ot.name);
+							int numEvents = nodeMeasures.getValue(0);
+							int numObjects = nodeMeasures.getValue(1);
+							if (numObjects > numEvents) {
+								isDouble = true;
+							}						
+						}
+					}
+					String edgeLabel = "TO"+tv.tbrResults.arcExecutions.get(arc);
+					String strokeWidth = "1";
+					if (isDouble) {
+						strokeWidth = "3";
+					}
+					graph.insertEdge(parent, arc.getLocalID().toString(), edgeLabel, source, target, "fontSize=10;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+strokeWidth);
 				}
 			}
 			
