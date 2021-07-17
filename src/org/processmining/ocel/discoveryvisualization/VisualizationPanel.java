@@ -29,15 +29,19 @@ import org.processmining.framework.packages.PackageDescriptor;
 import org.processmining.framework.packages.PackageDescriptor.OS;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.PluginDescriptor;
+import org.processmining.models.graphbased.directed.petrinet.PetrinetNode;
+import org.processmining.models.graphbased.directed.petrinet.elements.Place;
 import org.processmining.ocel.annotations.ActivityOtDependent;
 import org.processmining.ocel.annotations.ActivityOtIndipendent;
 import org.processmining.ocel.annotations.EdgesMeasures;
 import org.processmining.ocel.discovery.AnnotatedModel;
 import org.processmining.ocel.discovery.Endpoint;
 import org.processmining.ocel.discovery.ModelEdge;
+import org.processmining.ocel.discovery.ModelWithTbrResults;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 import org.processmining.ocel.ocelobjects.OcelObject;
 import org.processmining.ocel.ocelobjects.OcelObjectType;
+import org.processmining.ocel.replay.ReplayView;
 
 import com.fluxicon.slickerbox.components.NiceDoubleSlider;
 import com.fluxicon.slickerbox.components.NiceSlider.Orientation;
@@ -1023,84 +1027,115 @@ class VisualizationTab extends JPanel {
 			}
 		}
 		
-		for (ModelEdge edge : model.edgesMeasures.keySet()) {
-			String act1 = edge.sourceActivity;
-			String act2 = edge.targetActivity;
-			
-			EdgesMeasures edgeMeasure = model.edgesMeasures.get(edge);
-			
-			if (activityIndipendentString.containsKey(act1) && activityIndipendentString.containsKey(act2)) {
-				if (edgeMeasure.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
-					Object obj1 = activityIndipendentString.get(act1);
-					Object obj2 = activityIndipendentString.get(act2);
-					String this_color = getColorFromString(edge.objectType.name);
-					
-					if (this.expandedModelEdges.contains(edge)) {
-						Object intermediateNode = graph.insertVertex(parent, "", edgeMeasure.toString(), 150, 150, 275, 250, "fontSize=18;shape="+mxConstants.SHAPE_DOUBLE_ELLIPSE+";fillColor="+this_color+";fontColor=white");
-						Object arc1 = graph.insertEdge(parent, null, "", obj1, intermediateNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
-						Object arc2 = graph.insertEdge(parent, null, "", intermediateNode, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
-						edges.put(edge, intermediateNode);
-						invEdges.put(intermediateNode, edge);
-					}
-					else {
-						int value = edgeMeasure.getValue(this.panel.controlTab.getSelectedIndex());
-						int penwidth = 1 + (int)Math.floor(Math.log1p(value)/2.0);
-						Object arc = graph.insertEdge(parent, null, edgeMeasure.toReducedString(this.panel.controlTab.getSelectedIndex()), obj1, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
-						edges.put(edge, arc);
-						invEdges.put(arc, edge);
-					}
-				}
+		if (true) {
+			Set<String> tbrActivities = new HashSet<String>();
+			Map<String, ActivityOtIndipendent> actNameToActObj = new HashMap<String, ActivityOtIndipendent>();
+			for (ActivityOtIndipendent act : activityIndipendent.keySet()) {
+				tbrActivities.add(act.activity);
+				actNameToActObj.put(act.activity, act);
 			}
-		}
-		
-		for (OcelObjectType ot : model.startActivities.keySet()) {
-			boolean is_ok = false;
-			for (String act : model.startActivities.get(ot).endpoints.keySet()) {
-				if (activityIndipendentString.containsKey(act)) {
-					Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
-					if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
-						is_ok = true;
-						break;
-					}
-				}
-			}
-			if (is_ok) {
+			ModelWithTbrResults modelWithTbrResults = new ModelWithTbrResults(this.model, tbrActivities);
+			for (OcelObjectType ot : modelWithTbrResults.replayViews.keySet()) {
 				String this_color = getColorFromString(ot.name);
-				Object saNode = graph.insertVertex(parent, "", ot.name, 150, 150, 275, 60, "shape=ellipse;fillColor="+this_color+";fontColor=white");
-				for (String act : model.startActivities.get(ot).endpoints.keySet()) {
-					if (activityIndipendentString.containsKey(act)) {
-						Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
-						if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
-							int value = activity.getValue();
+				ReplayView tv = modelWithTbrResults.replayViews.get(ot);
+				Map<PetrinetNode, Object> petriNetNodesToObjects = new HashMap<PetrinetNode, Object>();
+				for (Place place : tv.net.getPlaces()) {
+					String placeLabel = "p="+tv.tbrResults.totalProducedPerPlace.get(place);
+					placeLabel += ";m="+tv.tbrResults.totalMissingPerPlace.get(place);
+					placeLabel += "\n;c="+tv.tbrResults.totalConsumedPerPlace.get(place);
+					placeLabel += ";r="+tv.tbrResults.totalRemainingPerPlace.get(place);
+					int placeSizeX = 90;
+					int placeSizeY = 90;
+					if (tv.im.contains(place)) {
+						placeLabel = ot.name;
+						placeSizeX = 160;
+						placeSizeY = 40;
+					}
+					Object placeNode = this.graph.insertVertex(parent, "netPlace@@"+place.getId().toString(), placeLabel, 150, 150, placeSizeX, placeSizeY, "fontSize=11;shape=ellipse;fillColor="+this_color+";fontColor=white");
+				}
+			}
+			
+		}
+		else {
+			for (ModelEdge edge : model.edgesMeasures.keySet()) {
+				String act1 = edge.sourceActivity;
+				String act2 = edge.targetActivity;
+				
+				EdgesMeasures edgeMeasure = model.edgesMeasures.get(edge);
+				
+				if (activityIndipendentString.containsKey(act1) && activityIndipendentString.containsKey(act2)) {
+					if (edgeMeasure.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
+						Object obj1 = activityIndipendentString.get(act1);
+						Object obj2 = activityIndipendentString.get(act2);
+						String this_color = getColorFromString(edge.objectType.name);
+						
+						if (this.expandedModelEdges.contains(edge)) {
+							Object intermediateNode = graph.insertVertex(parent, "", edgeMeasure.toString(), 150, 150, 275, 250, "fontSize=18;shape="+mxConstants.SHAPE_DOUBLE_ELLIPSE+";fillColor="+this_color+";fontColor=white");
+							Object arc1 = graph.insertEdge(parent, null, "", obj1, intermediateNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+							Object arc2 = graph.insertEdge(parent, null, "", intermediateNode, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
+							edges.put(edge, intermediateNode);
+							invEdges.put(intermediateNode, edge);
+						}
+						else {
+							int value = edgeMeasure.getValue(this.panel.controlTab.getSelectedIndex());
 							int penwidth = 1 + (int)Math.floor(Math.log1p(value)/2.0);
-							Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.getSelectedIndex()), saNode, activityIndipendentString.get(act), "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
+							Object arc = graph.insertEdge(parent, null, edgeMeasure.toReducedString(this.panel.controlTab.getSelectedIndex()), obj1, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
+							edges.put(edge, arc);
+							invEdges.put(arc, edge);
 						}
 					}
 				}
 			}
-		}
-		
-		for (OcelObjectType ot : model.endActivities.keySet()) {
-			boolean is_ok = false;
-			for (String act : model.endActivities.get(ot).endpoints.keySet()) {
-				if (activityIndipendentString.containsKey(act)) {
-					Endpoint activity = model.endActivities.get(ot).endpoints.get(act);
-					if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
-						is_ok = true;
-						break;
+			
+			for (OcelObjectType ot : model.startActivities.keySet()) {
+				boolean is_ok = false;
+				for (String act : model.startActivities.get(ot).endpoints.keySet()) {
+					if (activityIndipendentString.containsKey(act)) {
+						Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
+						if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
+							is_ok = true;
+							break;
+						}
+					}
+				}
+				if (is_ok) {
+					String this_color = getColorFromString(ot.name);
+					Object saNode = graph.insertVertex(parent, "", ot.name, 150, 150, 275, 60, "shape=ellipse;fillColor="+this_color+";fontColor=white");
+					for (String act : model.startActivities.get(ot).endpoints.keySet()) {
+						if (activityIndipendentString.containsKey(act)) {
+							Endpoint activity = model.startActivities.get(ot).endpoints.get(act);
+							if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
+								int value = activity.getValue();
+								int penwidth = 1 + (int)Math.floor(Math.log1p(value)/2.0);
+								Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.getSelectedIndex()), saNode, activityIndipendentString.get(act), "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
+							}
+						}
 					}
 				}
 			}
-			if (is_ok) {
-				String this_color = getColorFromString(ot.name);
-				Object eaNode = graph.insertVertex(parent, "", "", 150, 150, 60, 60, "shape=ellipse;fillColor="+this_color);
+			
+			for (OcelObjectType ot : model.endActivities.keySet()) {
+				boolean is_ok = false;
 				for (String act : model.endActivities.get(ot).endpoints.keySet()) {
 					if (activityIndipendentString.containsKey(act)) {
 						Endpoint activity = model.endActivities.get(ot).endpoints.get(act);
 						if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
-							int value = activity.getValue();
-							int penwidth = 1 + (int)Math.floor(Math.log1p(value)/2.0);
-							Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.getSelectedIndex()), activityIndipendentString.get(act), eaNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
+							is_ok = true;
+							break;
+						}
+					}
+				}
+				if (is_ok) {
+					String this_color = getColorFromString(ot.name);
+					Object eaNode = graph.insertVertex(parent, "", "", 150, 150, 60, 60, "shape=ellipse;fillColor="+this_color);
+					for (String act : model.endActivities.get(ot).endpoints.keySet()) {
+						if (activityIndipendentString.containsKey(act)) {
+							Endpoint activity = model.endActivities.get(ot).endpoints.get(act);
+							if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_EDGE_COUNT)) {
+								int value = activity.getValue();
+								int penwidth = 1 + (int)Math.floor(Math.log1p(value)/2.0);
+								Object arc = graph.insertEdge(parent, null, activity.toReducedString(this.panel.controlTab.getSelectedIndex()), activityIndipendentString.get(act), eaNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
+							}
 						}
 					}
 				}
