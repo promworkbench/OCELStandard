@@ -60,9 +60,9 @@ public class ActivityOtIndipendent {
 	public String toString() {
 		StringBuilder ret = new StringBuilder();
 		ret.append(String.format("%s\n\n", this.activity));
-		ret.append(String.format("events = %d\n", this.numEvents));
-		ret.append(String.format("unique objects = %d\n", this.numUniqueObjects));
-		ret.append(String.format("total objects = %d\n", this.numTotalObjects));
+		ret.append(String.format("E = %d  ", this.numEvents));
+		ret.append(String.format("UO = %d  ", this.numUniqueObjects));
+		ret.append(String.format("TO = %d", this.numTotalObjects));
 		return ret.toString();
 	}
 	

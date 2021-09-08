@@ -95,11 +95,11 @@ public class ActivityOtDependent {
 		StringBuilder ret = new StringBuilder();
 		ret.append(String.format("%s\n(%s)\n", this.activity, this.objectType.name));
 		ret.append("\n");
-		ret.append(String.format("events = %d\n", this.numEvents));
-		ret.append(String.format("unique objects = %d\n", this.numUniqueObjects));
-		ret.append(String.format("total objects = %d\n", this.numTotalObjects));
-		ret.append(String.format("min rel. obj = %d\n", this.minRelatedObjects));
-		ret.append(String.format("max rel. obj = %d\n", this.maxRelatedObjects));
+		ret.append(String.format("E = %d  ", this.numEvents));
+		ret.append(String.format("UO = %d  ", this.numUniqueObjects));
+		ret.append(String.format("TO = %d", this.numTotalObjects));
+		/*ret.append(String.format("min rel. obj = %d\n", this.minRelatedObjects));
+		ret.append(String.format("max rel. obj = %d\n", this.maxRelatedObjects));*/
 		return ret.toString();
 	}
 	
