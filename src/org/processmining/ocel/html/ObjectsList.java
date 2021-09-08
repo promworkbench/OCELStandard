@@ -35,7 +35,7 @@ public class ObjectsList {
 	
 	public static HTMLContainer generateTable(AnnotatedModel model, String selectedObjectType) {
 		StringBuilder ret = new StringBuilder();
-		ret.append("<table><thead><tr><th>Object ID</th><th>Start Timestamp</th><th>Complete Timestamp</th><th>Lifecycle Duration</th><th>Number of Rel.Ev.</th></tr></thead><tbody>");
+		ret.append("<table border='1'><thead><tr><th>Object ID</th><th>Start Timestamp</th><th>Complete Timestamp</th><th>Lifecycle Duration</th><th>Number of Rel.Ev.</th></tr></thead><tbody>");
 		System.out.println(model.ocel.objectTypes);
 		OcelObjectType type = model.ocel.objectTypes.get(selectedObjectType);
 		for (OcelObject object : type.objects) {

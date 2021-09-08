@@ -6,11 +6,11 @@ import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 
-@Plugin(name = "OC-DFG Discovery",
-returnLabels = { "OC-DFG Model" },
+@Plugin(name = "OC-PM Discovery",
+returnLabels = { "OC-PM Model" },
 returnTypes = { AnnotatedModel.class },
 parameterLabels = { "OCEL Event Log" },
-help = "OC-DFG Discovery",
+help = "OC-PM Discovery",
 userAccessible = true)
 public class DiscoveryPlugin {
 	@PluginVariant(requiredParameterLabels = { 0 })

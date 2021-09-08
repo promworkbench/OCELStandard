@@ -8,7 +8,7 @@ import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.ocel.discovery.AnnotatedModel;
 
-@Plugin(name = "OC-DFG Visualizer", parameterLabels = { "OC-DFG Model" }, returnLabels = { "JPanel" }, returnTypes = { JPanel.class })
+@Plugin(name = "OC-PM Visualizer", parameterLabels = { "OC-PM Model" }, returnLabels = { "JPanel" }, returnTypes = { JPanel.class })
 @Visualizer
 public class VisualizationPlugin {
 	@PluginVariant(requiredParameterLabels = { 0 })

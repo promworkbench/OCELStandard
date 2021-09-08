@@ -32,7 +32,7 @@ public class EventsList {
 		StringBuilder ret = new StringBuilder();
 		List<String> attributeNames = new ArrayList<String>((Set<String>)model.ocel.globalLog.get("ocel:attribute-names"));
 		List<String> objectTypes = new ArrayList<String>((Set<String>)model.ocel.globalLog.get("ocel:object-types"));
-		ret.append("<table><thead><tr><th>Event ID</th><th>Activity</th><th>Timestamp</th>");
+		ret.append("<table border='1'><thead><tr><th>Event ID</th><th>Activity</th><th>Timestamp</th>");
 		for (String ot : objectTypes) {
 			ret.append("<th>"+ot+"</th>");
 		}
