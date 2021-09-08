@@ -1011,20 +1011,22 @@ class VisualizationTab extends JPanel {
 		for (String act : model.indipendentNodeMeasures.keySet()) {
 			ActivityOtIndipendent activity = model.indipendentNodeMeasures.get(act);
 			if (activity.satisfy(this.panel.controlTab.getSelectedIndex(), MIN_ALLOWED_ACT_COUNT)) {
-				int width;
-				int height;
 				String label;
 				if (this.expandedActivities.contains(act)) {
-					width = 275;
-					height = 250;
 					label = activity.toString();
 				}
 				else {
-					width = 275;
-					height = 60;
 					label = activity.toReducedString(this.panel.controlTab.getSelectedIndex());
 				}
-				
+				String[] labelSplit = label.split("\n");
+				int stringHeight = labelSplit.length;
+				int stringWidth = 0;
+				for (String lbl : labelSplit) {
+					stringWidth = Math.max(stringWidth, lbl.length());
+				}
+				int width = 10 * stringWidth;
+				int height = 30 * stringHeight;
+
 				int cc = 125 + 125*(this.model.MAX_INDIPENDENT_ACT_COUNT - activity.getValue(this.panel.controlTab.getSelectedIndex()))/(this.model.MAX_INDIPENDENT_ACT_COUNT - this.model.MIN_INDIPENDENT_ACT_COUNT);
 				String hex = String.format("#%02x%02x%02x", cc, cc, cc);
 				
