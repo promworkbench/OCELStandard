@@ -3,19 +3,22 @@ package org.processmining.ocel.annotations;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.processmining.ocel.discovery.AnnotatedModel;
 import org.processmining.ocel.ocelobjects.OcelEvent;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 import org.processmining.ocel.ocelobjects.OcelObject;
 
 public class ActivityOtIndipendent {
 	public OcelEventLog ocel;
+	public AnnotatedModel model;
 	public String activity;
 	public int numEvents;
 	public int numUniqueObjects;
 	public int numTotalObjects;
 	
-	public ActivityOtIndipendent(OcelEventLog ocel, String activity) {
+	public ActivityOtIndipendent(OcelEventLog ocel, AnnotatedModel model, String activity) {
 		this.ocel = ocel;
+		this.model = model;
 		this.activity = activity;
 		this.calculateNumEvents();
 		this.calculateUniqueObjects();
@@ -62,7 +65,13 @@ public class ActivityOtIndipendent {
 		ret.append(String.format("%s\n\n", this.activity));
 		ret.append(String.format("E = %d  ", this.numEvents));
 		ret.append(String.format("UO = %d  ", this.numUniqueObjects));
-		ret.append(String.format("TO = %d", this.numTotalObjects));
+		ret.append(String.format("TO = %d\n\n", this.numTotalObjects));
+		if (model.dependentNodeMeasures.containsKey(this.activity)) {
+			for (String ot : model.dependentNodeMeasures.get(activity).keySet()) {
+				ActivityOtDependent zz = model.dependentNodeMeasures.get(activity).get(ot);
+				ret.append(zz.toIntermediateString(true) + "\n");
+			}
+		}
 		return ret.toString();
 	}
 	

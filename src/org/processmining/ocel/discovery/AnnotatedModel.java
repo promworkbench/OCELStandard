@@ -54,7 +54,7 @@ public class AnnotatedModel {
 	public void calculateIndipendent() {
 		this.indipendentNodeMeasures = new HashMap<String, ActivityOtIndipendent>();
 		for (String activity : this.activities.activities) {
-			this.indipendentNodeMeasures.put(activity, new ActivityOtIndipendent(ocel, activity));
+			this.indipendentNodeMeasures.put(activity, new ActivityOtIndipendent(ocel, this, activity));
 		}
 	}
 	
@@ -63,7 +63,7 @@ public class AnnotatedModel {
 		for (String activity : this.activityOtGroups.activityOtGroups.keySet()) {
 			this.dependentNodeMeasures.put(activity, new HashMap<String, ActivityOtDependent>());
 			for (String ot : this.activityOtGroups.activityOtGroups.get(activity)) {
-				this.dependentNodeMeasures.get(activity).put(ot, new ActivityOtDependent(ocel, activity, ot));
+				this.dependentNodeMeasures.get(activity).put(ot, new ActivityOtDependent(ocel, this, activity, ot));
 			}
 		}
 	}

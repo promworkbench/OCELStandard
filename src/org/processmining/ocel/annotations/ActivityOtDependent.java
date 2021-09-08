@@ -3,6 +3,7 @@ package org.processmining.ocel.annotations;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.processmining.ocel.discovery.AnnotatedModel;
 import org.processmining.ocel.ocelobjects.OcelEvent;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 import org.processmining.ocel.ocelobjects.OcelObject;
@@ -10,6 +11,7 @@ import org.processmining.ocel.ocelobjects.OcelObjectType;
 
 public class ActivityOtDependent {
 	public OcelEventLog ocel;
+	public AnnotatedModel model;
 	public String activity;
 	public OcelObjectType objectType;
 	public int numEvents;
@@ -18,8 +20,9 @@ public class ActivityOtDependent {
 	public int minRelatedObjects;
 	public int maxRelatedObjects;
 	
-	public ActivityOtDependent(OcelEventLog ocel, String activity, String objectType) {
+	public ActivityOtDependent(OcelEventLog ocel, AnnotatedModel model, String activity, String objectType) {
 		this.ocel = ocel;
+		this.model = model;
 		this.activity = activity;
 		this.objectType = ocel.objectTypes.get(objectType);
 		this.calculateNumEvents();
@@ -91,15 +94,22 @@ public class ActivityOtDependent {
 		}
 	}
 	
+	public String toIntermediateString(boolean returnOt) {
+		StringBuilder ret = new StringBuilder();
+		if (returnOt) {
+			ret.append("(" + this.objectType.name + ")  ");
+		}
+		ret.append(String.format("E = %d  ", this.numEvents));
+		ret.append(String.format("UO = %d  ", this.numUniqueObjects));
+		ret.append(String.format("TO = %d", this.numTotalObjects));
+		return ret.toString();
+	}
+	
 	public String toString() {
 		StringBuilder ret = new StringBuilder();
 		ret.append(String.format("%s\n(%s)\n", this.activity, this.objectType.name));
 		ret.append("\n");
-		ret.append(String.format("E = %d  ", this.numEvents));
-		ret.append(String.format("UO = %d  ", this.numUniqueObjects));
-		ret.append(String.format("TO = %d", this.numTotalObjects));
-		/*ret.append(String.format("min rel. obj = %d\n", this.minRelatedObjects));
-		ret.append(String.format("max rel. obj = %d\n", this.maxRelatedObjects));*/
+		ret.append(this.toIntermediateString(false));
 		return ret.toString();
 	}
 	
