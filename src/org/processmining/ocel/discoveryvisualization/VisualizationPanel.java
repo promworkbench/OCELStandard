@@ -1150,11 +1150,16 @@ class VisualizationTab extends JPanel {
 						String this_color = getColorFromString(edge.objectType.name);
 						
 						if (this.expandedModelEdges.contains(edge)) {
-							Object intermediateNode = graph.insertVertex(parent, "", edgeMeasure.toString(), 150, 150, 275, 250, "fontSize=18;shape="+mxConstants.SHAPE_DOUBLE_ELLIPSE+";fillColor="+this_color+";fontColor=white");
+							/*Object intermediateNode = graph.insertVertex(parent, "", edgeMeasure.toString(), 150, 150, 275, 250, "fontSize=18;shape="+mxConstants.SHAPE_DOUBLE_ELLIPSE+";fillColor="+this_color+";fontColor=white");
 							Object arc1 = graph.insertEdge(parent, null, "", obj1, intermediateNode, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
 							Object arc2 = graph.insertEdge(parent, null, "", intermediateNode, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color);
 							edges.put(edge, intermediateNode);
-							invEdges.put(intermediateNode, edge);
+							invEdges.put(intermediateNode, edge);*/
+							int value = edgeMeasure.getValue(this.panel.controlTab.getSelectedIndex());
+							int penwidth = 1 + (int)Math.floor(Math.log1p(value)/2.0);
+							Object arc = graph.insertEdge(parent, null, edgeMeasure.toIntermediateString(), obj1, obj2, "fontSize=16;strokeColor="+this_color+";fontColor="+this_color+";strokeWidth="+penwidth);
+							edges.put(edge, arc);
+							invEdges.put(arc, edge);
 						}
 						else {
 							int value = edgeMeasure.getValue(this.panel.controlTab.getSelectedIndex());

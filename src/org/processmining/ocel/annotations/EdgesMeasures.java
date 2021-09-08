@@ -87,6 +87,16 @@ public class EdgesMeasures {
 		return ret.toString();
 	}
 	
+	public String toIntermediateString() {
+		StringBuilder ret = new StringBuilder();
+		ret.append(String.format("EC=%d", this.eventCouples));
+		ret.append("\n");
+		ret.append(String.format("UO=%d", this.uniqueObjects));
+		ret.append("\n");
+		ret.append(String.format("TO=%d", this.totalObjects));
+		return ret.toString();
+	}
+	
 	public String toReducedString(int idx) {
 		if (idx == 0) {
 			return String.format("EC=%d", this.eventCouples);
