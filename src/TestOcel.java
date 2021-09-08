@@ -1,13 +1,17 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.processmining.ocel.Importer;
 import org.processmining.ocel.discovery.AnnotatedModel;
-import org.processmining.ocel.filtering.DummyFilter;
+import org.processmining.ocel.html.EventsList;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 
 public class TestOcel {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		OcelEventLog log = Importer.importFromFile("C:\\log.xmlocel");
 		AnnotatedModel model = new AnnotatedModel(log);
-		System.out.println(log.events.size());
+		/*System.out.println(log.events.size());
 		System.out.println(log.objects.size());
 		System.out.println(log.objectTypes.size());
 		OcelEventLog filtered = DummyFilter.apply(log);
@@ -18,6 +22,12 @@ public class TestOcel {
 		System.out.println("");
 		System.out.println(log.events.size());
 		System.out.println(log.objects.size());
-		System.out.println(log.objectTypes.size());
+		System.out.println(log.objectTypes.size());*/
+		EventsList eventsList = new EventsList(model);
+		String ret = eventsList.generateTable();
+	    BufferedWriter writer = new BufferedWriter(new FileWriter("C:/Users/berti/prova.html"));
+	    writer.write(ret);
+	    writer.flush();
+	    writer.close();
 	}
 }
