@@ -115,7 +115,7 @@ class ControlTab extends JPanel {
 	JComboBox modelTypeSelection;
 	JLabel modelTypeSelectionLabel;
 	
-	String[] syntheticMetrics = { "Events", "Unique Objects", "Total Objects" };
+	String[] syntheticMetrics = { "E/EC", "UO", "TO" };
 	JComboBox syntheticMetricsSelection;
 	JLabel syntheticMetricsSelectionLabel;
 	MetricsActionListener metricsActionListener;
