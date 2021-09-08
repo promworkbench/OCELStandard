@@ -228,11 +228,12 @@ public class XMLImporter extends AbstractImportPlugin {
 				else if (key.equals("timestamp")) {
 					String value = property.getAttributeValue("value");
 					try {
-						event.timestamp = Date.from( Instant.parse( value ));
+						timestamp = Date.from( Instant.parse( value ));
 					}
 					catch (Exception ex) {
-						event.timestamp = Date.from( Instant.parse( value + "Z" ));
+						timestamp = Date.from( Instant.parse( value + "Z" ));
 					}
+					//System.out.println(event.timestamp);
 				}
 				else if (key.equals("omap")) {
 					List<Element> relatedObjects = property.getChildren();
