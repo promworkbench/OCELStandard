@@ -21,6 +21,5 @@
     	<dependency conf="lib->default" org="org.eclipse.collections" name="eclipse-collections" rev="9.2.0" />
     	<dependency conf="lib->default" org="org.apache.commons" name="commons-jexl3" rev="3.0" />
     	<dependency conf="lib->default" org="org.codehaus.groovy" name="groovy-all" rev="2.5.3" />
-		<dependency conf="lib->default" org="org.json" name="json" rev="20201115"/>
     </dependencies>
 </ivy-module>
