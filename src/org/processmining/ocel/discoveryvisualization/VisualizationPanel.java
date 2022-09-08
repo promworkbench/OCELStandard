@@ -1394,7 +1394,9 @@ class GraphMouseListener implements MouseListener {
 		if (this.tab.invEdges.containsKey(cell)) {
 			ModelEdge edge = this.tab.invEdges.get(cell);
 			System.out.println(edge.toString());
-			if (!this.tab.expandedModelEdges.contains(edge)) {
+			JOptionPane.showMessageDialog(null, edge.toString());
+
+			/*if (!this.tab.expandedModelEdges.contains(edge)) {
 				this.tab.expandedModelEdges.add(edge);
 				this.tab.doRepresentationWork();
 				this.tab.addGraphToView();
@@ -1403,14 +1405,16 @@ class GraphMouseListener implements MouseListener {
 				this.tab.expandedModelEdges.remove(edge);
 				this.tab.doRepresentationWork();
 				this.tab.addGraphToView();
-			}
+			}*/
 			this.tab.panel.edgeFilteringTab.setEdge(edge);
 		}
 		else if (this.tab.invActivityIndipendent.containsKey(cell)) {
 			ActivityOtIndipendent act0 = this.tab.invActivityIndipendent.get(cell);
 			System.out.println(act0.toString());
 			String act = act0.activity;
-			if (!this.tab.expandedActivities.contains(act)) {
+			JOptionPane.showMessageDialog(null, act0.toString());
+
+			/*if (!this.tab.expandedActivities.contains(act)) {
 				this.tab.expandedActivities.add(act);
 				this.tab.doRepresentationWork();
 				this.tab.addGraphToView();
@@ -1419,12 +1423,14 @@ class GraphMouseListener implements MouseListener {
 				this.tab.expandedActivities.remove(act);
 				this.tab.doRepresentationWork();
 				this.tab.addGraphToView();
-			}
+			}*/
 			this.tab.panel.activityFilteringTab.setActivityAndObjectType(act, null);
 		}
 		else if (this.tab.invActivityOtDependent.containsKey(cell)) {
 			ActivityOtDependent actOt = this.tab.invActivityOtDependent.get(cell);
 			System.out.println(actOt.toString());
+			JOptionPane.showMessageDialog(null, actOt.toString());
+
 			this.tab.panel.activityFilteringTab.setActivityAndObjectType(actOt.activity, actOt.objectType);
 		}
 	}
