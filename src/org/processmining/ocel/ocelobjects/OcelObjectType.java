@@ -12,6 +12,5 @@ public class OcelObjectType {
 		this.eventLog = eventLog;
 		this.name = name;
 		this.objects = new HashSet<OcelObject>();
-		((Set<String>)this.eventLog.globalLog.get("ocel:object-types")).add(name);
 	}
 }

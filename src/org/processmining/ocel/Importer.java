@@ -8,11 +8,13 @@ public class Importer {
 	public static OcelEventLog importFromFile(String logPath) {
 		if (logPath.contains("jsonocel")) {
 			JSONImporter importer = new JSONImporter(logPath);
-			return importer.doImport();
+			OcelEventLog log = importer.doImport();
+			return log;
 		}
 		else if (logPath.contains("xmlocel")) {
 			XMLImporter importer = new XMLImporter(logPath);
-			return importer.doImport();
+			OcelEventLog log = importer.doImport();
+			return log;
 		}
 		return null;
 	}
