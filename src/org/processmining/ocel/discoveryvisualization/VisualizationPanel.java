@@ -71,7 +71,7 @@ public class VisualizationPanel extends JPanel {
 		this.setLayout(rl);
 		
 		controlTab = new ControlTab(context, model, this);
-		this.add(controlTab, new Float(5));
+		this.add(controlTab, new Float(8));
 		
 		statisticsTab = new StatisticsTab(context, model, this);
 		this.add(statisticsTab, new Float(5));
@@ -109,7 +109,9 @@ class ControlTab extends JPanel {
 	public NiceDoubleSlider actSlider;
 	public NiceDoubleSlider edgesSlider;
 	JButton resetFilters;
+	JButton applySliders;
 	ResetFiltersMouseListener resetFiltersMouseListener;
+	ApplySlidersMouseListener applySlidersMouseListener;
 	
 	String[] modelTypes = { "OC-DFG", "OC-Petri Nets" };
 	JComboBox modelTypeSelection;
@@ -184,11 +186,17 @@ class ControlTab extends JPanel {
 		this.add(this.actSlider);
 		this.add(this.edgesSlider);
 		
+		this.applySliders = new JButton("Apply sliders");
+		this.add(this.applySliders);
+		
 		this.resetFilters = new JButton("Reset filters");
 		this.add(this.resetFilters);
 		
 		this.resetFiltersMouseListener = new ResetFiltersMouseListener(this);
 		this.resetFilters.addMouseListener(this.resetFiltersMouseListener);
+		
+		this.applySlidersMouseListener = new ApplySlidersMouseListener(this);
+		this.applySliders.addMouseListener(this.applySlidersMouseListener);
 		
 		this.initializeMenu();
 		
@@ -422,6 +430,40 @@ class StatisticsTab extends JPanel {
 		this.model = model;
 		this.fillStatistics();
 	}
+}
+
+class ApplySlidersMouseListener implements MouseListener {
+	ControlTab tab;
+	
+	public ApplySlidersMouseListener(ControlTab tab) {
+		this.tab = tab;
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		this.tab.panel.visualizationTab.doRepresentationWork();
+		this.tab.panel.visualizationTab.addGraphToView();
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
 
 class ResetFiltersMouseListener implements MouseListener {
@@ -1290,8 +1332,8 @@ class SliderChange implements ChangeListener {
 	
 	public void stateChanged(ChangeEvent e) {
 		// TODO Auto-generated method stub
-		this.panel.visualizationTab.doRepresentationWork();
-		this.panel.visualizationTab.addGraphToView();
+		/*this.panel.visualizationTab.doRepresentationWork();
+		this.panel.visualizationTab.addGraphToView();*/
 	}
 }
 
