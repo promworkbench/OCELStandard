@@ -1302,6 +1302,10 @@ class VisualizationTab extends JPanel {
 	}
 	
 	public void doLayouting() {
+	    Map<String, Object> style = graph.getStylesheet().getDefaultEdgeStyle();
+	    style.put(mxConstants.STYLE_ROUNDED, true);
+	    style.put(mxConstants.STYLE_EDGE, mxConstants.EDGESTYLE_ENTITY_RELATION);
+	    
 		mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
 
 		layout.execute(graph.getDefaultParent());
