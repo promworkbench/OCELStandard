@@ -2,6 +2,7 @@ package org.processmining.ocel.ocelobjects;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -94,8 +95,8 @@ public class OcelEventLog {
 		return this.objects;
 	}
 	
-	public Set<String> getAttributeNames() {
-		return (Set<String>)this.globalLog.get("ocel:attribute-names");
+	public List<String> getAttributeNames() {
+		return (List<String>) this.globalLog.get("ocel:attribute-names");
 	}
 	
 	public Set<String> getObjectTypes() {
