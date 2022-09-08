@@ -1306,6 +1306,9 @@ class VisualizationTab extends JPanel {
 	    style.put(mxConstants.STYLE_ROUNDED, true);
 	    style.put(mxConstants.STYLE_EDGE, mxConstants.EDGESTYLE_ENTITY_RELATION);
 	    
+	    Map<String, Object> style2 = graph.getStylesheet().getDefaultVertexStyle();
+	    style2.put(mxConstants.STYLE_ROUNDED, true);
+	    
 		mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
 
 		layout.execute(graph.getDefaultParent());
