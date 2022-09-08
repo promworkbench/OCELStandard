@@ -1050,6 +1050,29 @@ class VisualizationTab extends JPanel {
 		return color;
 	}
 	
+	public String putNewlinesInLabel(String label) {
+		String[] labelSplit = label.split(" ");
+		String retLabel = "";
+		String lastLabel = "";
+		if (labelSplit.length > 0) {
+			lastLabel = labelSplit[0];
+			int i = 1;
+			while (i < labelSplit.length) {
+				if (lastLabel.length() > 10) {
+					retLabel = retLabel + "\n" + lastLabel;
+					lastLabel = "";
+				}
+				else {
+					lastLabel += " ";
+				}
+				lastLabel += labelSplit[i];
+				i++;
+			}
+		}
+		retLabel = retLabel + "\n" + lastLabel;
+		return retLabel;
+	}
+	
 	public void drawGraph() {
 		Object parent = graph.getDefaultParent();
 		
@@ -1064,7 +1087,7 @@ class VisualizationTab extends JPanel {
 					label = activity.toString();
 				}
 				else {
-					label = activity.toReducedString(this.panel.controlTab.getSelectedIndex());
+					label = this.putNewlinesInLabel(activity.toReducedString(this.panel.controlTab.getSelectedIndex()));
 				}
 				String[] labelSplit = label.split("\n");
 				int stringHeight = labelSplit.length;
@@ -1072,8 +1095,8 @@ class VisualizationTab extends JPanel {
 				for (String lbl : labelSplit) {
 					stringWidth = Math.max(stringWidth, lbl.length());
 				}
-				int width = 10 * stringWidth;
-				int height = 30 * stringHeight;
+				int width = 12 * stringWidth;
+				int height = 31 * stringHeight;
 
 				int cc = 125 + 125*(this.model.MAX_INDIPENDENT_ACT_COUNT - activity.getValue(this.panel.controlTab.getSelectedIndex()))/(this.model.MAX_INDIPENDENT_ACT_COUNT - this.model.MIN_INDIPENDENT_ACT_COUNT);
 				//String hex = String.format("#%02x%02x%02x", cc, cc, cc);
