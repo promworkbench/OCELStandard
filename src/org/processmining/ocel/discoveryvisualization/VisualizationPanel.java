@@ -177,8 +177,8 @@ class ControlTab extends JPanel {
 		this.syntheticMetricsSelection.addActionListener(this.metricsActionListener);
 		this.modelTypeSelection.addActionListener(this.metricsActionListener);
 		
-		this.actSlider = SlickerFactory.instance().createNiceDoubleSlider("% Activities", 0.0, 1.0, 0.2, Orientation.HORIZONTAL);
-		this.edgesSlider = SlickerFactory.instance().createNiceDoubleSlider("% Paths", 0.0, 1.0, 0.2, Orientation.HORIZONTAL);
+		this.actSlider = SlickerFactory.instance().createNiceDoubleSlider("% Activities", 0.0, 1.0, 1.0, Orientation.HORIZONTAL);
+		this.edgesSlider = SlickerFactory.instance().createNiceDoubleSlider("% Paths", 0.0, 1.0, 1.0, Orientation.HORIZONTAL);
 		
 		this.actSlider.addChangeListener(this.sliderChange);
 		this.edgesSlider.addChangeListener(this.sliderChange);
@@ -1037,11 +1037,17 @@ class VisualizationTab extends JPanel {
 	}
 	
 	public String getColorFromString(String orig) {
-		return String.format("#%X", orig.hashCode());
+		//return String.format("#%X", orig.hashCode());
+		String color = "#" + Integer.toHexString(orig.hashCode());
+		System.out.println("getColorFromString "+orig+" -> "+color);
+		return color;
 	}
 	
 	public String getOppositeColorFromString(String orig) {
-		return String.format("#%X", -orig.hashCode());
+		//return String.format("#%X", -orig.hashCode());
+		String color = "#" + Integer.toHexString(-orig.hashCode());
+		System.out.println("getOppositeColorFromString "+orig+" -> "+color);
+		return color;
 	}
 	
 	public void drawGraph() {
