@@ -80,13 +80,13 @@ public class JSONImporter extends AbstractImportPlugin {
 	}
 	
 	public void importGlobalEvent(OcelEventLog eventLog, JSONObject globalEvent) {
-		for (String key : (Iterable<String>) () -> globalEvent.keys()) {
+		for (String key : globalEvent.keySet()) {
 			eventLog.globalEvent.put(key, (Object)globalEvent.getString(key));
 		}
 	}
 	
 	public void importGlobalObject(OcelEventLog eventLog, JSONObject globalObject) {
-		for (String key : (Iterable<String>) () -> globalObject.keys()) {
+		for (String key : globalObject.keySet()) {
 			eventLog.globalObject.put(key, (Object)globalObject.getString(key));
 		}
 	}
@@ -109,7 +109,7 @@ public class JSONImporter extends AbstractImportPlugin {
 	}
 	
 	public void importEvents(OcelEventLog eventLog, JSONObject events) {
-		for (String eventId : (Iterable<String>) () -> events.keys()) {
+		for (String eventId : events.keySet()) {
 			JSONObject jsonEvent = events.getJSONObject(eventId);
 			OcelEvent event = new OcelEvent(eventLog);
 			event.id = eventId;
@@ -127,7 +127,7 @@ public class JSONImporter extends AbstractImportPlugin {
 				i++;
 			}
 			JSONObject jsonVmap = jsonEvent.getJSONObject("ocel:vmap");
-			for (String att_key : (Iterable<String>) () -> jsonVmap.keys()) {
+			for (String att_key : jsonVmap.keySet()) {
 				event.attributes.put(att_key, jsonVmap.get(att_key));
 			}
 			eventLog.events.put(eventId, event);
@@ -135,7 +135,7 @@ public class JSONImporter extends AbstractImportPlugin {
 	}
 	
 	public void importObjects(OcelEventLog eventLog, JSONObject objects) {
-		for (String objectId : (Iterable<String>) () -> objects.keys()) {
+		for (String objectId : objects.keySet()) {
 			JSONObject jsonObject = objects.getJSONObject(objectId);
 			OcelObject object = new OcelObject(eventLog);
 			object.id = objectId;
@@ -147,7 +147,7 @@ public class JSONImporter extends AbstractImportPlugin {
 			OcelObjectType objectType = eventLog.objectTypes.get(objectTypeName);
 			object.objectType = objectType;
 			JSONObject jsonVmap = jsonObject.getJSONObject("ocel:ovmap");
-			for (String att_key : (Iterable<String>) () -> jsonVmap.keys()) {
+			for (String att_key : jsonVmap.keySet()) {
 				object.attributes.put(att_key, jsonVmap.get(att_key));
 			}
 			eventLog.objects.put(objectId, object);
