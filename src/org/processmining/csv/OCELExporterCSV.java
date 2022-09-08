@@ -31,7 +31,6 @@ public class OCELExporterCSV {
 		ret.append(newline);
 		List<String> evids = new ArrayList<String>(ocel.events.keySet());
 		Collections.sort(evids);
-		System.out.println(evids);
 		for (String evid : evids) {
 			OcelEvent eve = ocel.events.get(evid);
 			StringBuilder row = new StringBuilder();
