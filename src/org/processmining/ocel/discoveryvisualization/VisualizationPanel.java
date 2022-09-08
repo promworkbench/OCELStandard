@@ -1154,7 +1154,7 @@ class VisualizationTab extends JPanel {
 				for (Transition tr : tv.net.getTransitions()) {
 					Object transNode = null;
 					if (tr.isInvisible()) {
-						transNode = this.graph.insertVertex(parent, "netTrans@@"+tr.getId().toString(), " ", 150, 150, 90, 60, "fillColor="+this_color+";fontColor=white;fontSize=11");
+						transNode = this.graph.insertVertex(parent, "netTrans@@"+tr.getId().toString(), " ", 150, 150, 45, 30, "fillColor="+this_color+";fontColor=white;fontSize=11");
 					}
 					else {
 						transNode = null;
