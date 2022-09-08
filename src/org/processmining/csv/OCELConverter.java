@@ -153,6 +153,10 @@ public class OCELConverter {
 				}
 				j++;
 			}
+			if (eve.id == null) {
+				eve.id = "e" + i;
+			}
+			ocel.events.put(eve.id, eve);
 			i++;
 		}
 		ocel.register();

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.processmining.csv.CustomCsvReader;
 import org.processmining.csv.OCELConverter;
+import org.processmining.csv.OCELExporterCSV;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 
 public class TestCsvReader {
@@ -15,5 +16,7 @@ public class TestCsvReader {
 		List<List<String>> parsedCsv = CustomCsvReader.parseContent(fileContent, "\r\n", ',', '"');
 		Map<Integer, String> columns = OCELConverter.getDefaultMapping(parsedCsv);
 		OcelEventLog ocel = OCELConverter.getOCELfromParsedCSV(parsedCsv, columns, "classic");
+		String ret = OCELExporterCSV.exportCsv(ocel, "\r\n", ',', '\"');
+		System.out.println(ret);
 	}
 }
