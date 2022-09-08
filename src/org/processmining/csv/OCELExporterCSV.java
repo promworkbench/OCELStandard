@@ -1,14 +1,45 @@
 package org.processmining.csv;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.processmining.contexts.uitopia.annotations.UIExportPlugin;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.annotations.Plugin;
+import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.ocel.ocelobjects.OcelEvent;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 import org.processmining.ocel.ocelobjects.OcelObject;
 
+@Plugin(name = "Export OCEL to CSV file", parameterLabels = { "OcelEventLog", "File" }, returnLabels = { }, returnTypes = {})
+@UIExportPlugin(description = "Export OCEL to CSV file", extension = "csvocel")
 public class OCELExporterCSV {
+	@PluginVariant(variantLabel = "Export OCEL to CSV file", requiredParameterLabels = { 0, 1 })
+	public void exportFromProm(PluginContext context, OcelEventLog eventLog, File file) {
+		String csvContent = OCELExporterCSV.exportCsv(eventLog, "\r\n", ',', '\"');
+		OutputStream os = null;
+		try {
+			os = new FileOutputStream(file);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			os.write(csvContent.getBytes());
+			os.flush();
+			os.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public static String exportCsv(OcelEventLog ocel, String newline, char sep, char quotechar) {
 		List<String> objectTypes = new ArrayList<String>(ocel.objectTypes.keySet());
 		List<String> attributeNames = new ArrayList<String>(ocel.getAttributeNames());

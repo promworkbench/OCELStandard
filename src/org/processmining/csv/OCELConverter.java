@@ -5,6 +5,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +75,7 @@ public class OCELConverter {
 		OcelEventLog ocel = new OcelEventLog();
 		ocel.globalLog.put("ocel:version", "1.0");
 		ocel.globalLog.put("ocel:ordering", "timestamp");
-		ocel.globalLog.put("ocel:attribute-names", attributeNames);
+		ocel.globalLog.put("ocel:attribute-names", new HashSet<String>(attributeNames));
 		ocel.globalLog.put("ocel:object-types", objectTypes);
 		
 		for (String col : objectTypes) {
