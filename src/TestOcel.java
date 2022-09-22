@@ -10,7 +10,7 @@ import org.processmining.ocel.ocelobjects.OcelEventLog;
 
 public class TestOcel {
 	public static void main(String[] args) throws IOException {
-		OcelEventLog log = Importer.importFromFile("C:\\log.xmlocel");
+		OcelEventLog log = Importer.importFromFile("C:\\obj-centr-log.xmlocel");
 		AnnotatedModel model = new AnnotatedModel(log);
 		/*System.out.println(log.events.size());
 		System.out.println(log.objects.size());

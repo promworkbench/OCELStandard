@@ -12,7 +12,7 @@ public class OcelEventComparator implements Comparator<OcelEvent> {
 		else if (o1.timestamp.getTime() > o2.timestamp.getTime()) {
 			return 1;
 		}
-		return 0;
+		return o1.id.compareTo(o2.id);
 	}
 
 }

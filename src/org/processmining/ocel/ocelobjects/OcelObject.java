@@ -31,5 +31,38 @@ public class OcelObject {
 	public void sortEvents() {
 		this.sortedRelatedEvents = new ArrayList<OcelEvent>(relatedEvents);
 		Collections.sort(this.sortedRelatedEvents, new OcelEventComparator());
+		
+		if (false) {
+			printRelatedEvents();
+		}
+	}
+	
+	public void printRelatedEvents() {
+		StringBuilder ret = new StringBuilder();
+		ret.append("\nO=");
+		ret.append(this.id);
+		ret.append("\nA=[");
+		
+		for (OcelEvent eve : sortedRelatedEvents) {
+			ret.append(eve.activity);
+			ret.append(", ");
+		}
+		ret.append("]");
+		ret.append("\nE=[");
+		
+		for (OcelEvent eve : sortedRelatedEvents) {
+			ret.append(eve.id);
+			ret.append(", ");
+		}
+		ret.append("]");
+
+		ret.append("\nT=[");
+		for (OcelEvent eve : sortedRelatedEvents) {
+			ret.append(eve.timestamp.toString());
+			ret.append(", ");
+		}
+		ret.append("]");
+		
+		System.out.println(ret.toString());
 	}
 }

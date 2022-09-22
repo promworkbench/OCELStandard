@@ -7,7 +7,7 @@ import org.processmining.ocel.ocelobjects.OcelEventLog;
 
 public class TestOcelVis {
 	public static void main(String[] args) {
-		OcelEventLog log = Importer.importFromFile("C:\\log.xmlocel");
+		OcelEventLog log = Importer.importFromFile("C:\\obj-centr-log.xmlocel");
 		AnnotatedModel model = new AnnotatedModel(log);
 		VisualizationPanel panel = new VisualizationPanel(null, model);
 		final JFrame frame = new JFrame("CONSOLE");
