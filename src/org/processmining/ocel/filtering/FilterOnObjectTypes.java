@@ -44,4 +44,28 @@ public class FilterOnObjectTypes {
 		}
 		return ret;
 	}
+	
+	public static String objTypesTextForInput(OcelEventLog original) {
+		StringBuilder ret = new StringBuilder();
+		Map<String, Integer> otCount = objectTypesCount(original);
+		for (String objType : otCount.keySet()) {
+			ret.append(objType+">>>YES");
+			ret.append("\n");
+		}
+		return ret.toString();
+	}
+	
+	public static OcelEventLog filterOnProvidedTextInput(OcelEventLog original, String providedInput) {
+		String[] objTypesLines = providedInput.split("\n");
+		Set<String> allowedObjTypes = new HashSet<String>();
+		for (String line : objTypesLines) {
+			String[] spli = line.split(">>>");
+			if (spli.length >= 2) {
+				if (spli[1].equals("YES")) {
+					allowedObjTypes.add(spli[0]);
+				}
+			}
+		}
+		return FilterOnObjectTypes.apply(original, allowedObjTypes);
+	}
 }

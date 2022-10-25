@@ -12,6 +12,7 @@ public class OcelEventLog {
 	public Map<String, Object> globalEvent;
 	public Map<String, Object> globalObject;
 	public Map<String, Object> globalLog;
+	public OcelEventLog preFilter;
 	
 	public OcelEventLog() {
 		this.events = new HashMap<String, OcelEvent>();
@@ -24,6 +25,7 @@ public class OcelEventLog {
 		this.globalLog.put("ocel:ordering", "timestamp");
 		this.globalLog.put("ocel:attribute-names", new HashSet<String>());
 		this.globalLog.put("ocel:object-types", new HashSet<String>());
+		this.preFilter = this;
 	}
 	
 	public void register() {
@@ -40,6 +42,7 @@ public class OcelEventLog {
 		cloned.globalEvent = new HashMap<String, Object>(this.globalEvent);
 		cloned.globalObject = new HashMap<String, Object>(this.globalObject);
 		cloned.globalLog = new HashMap<String, Object>(this.globalLog);
+		cloned.preFilter = this.preFilter;
 		return cloned;
 	}
 	
