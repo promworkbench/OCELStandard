@@ -42,7 +42,7 @@ public class OcelEventLog {
 		cloned.globalEvent = new HashMap<String, Object>(this.globalEvent);
 		cloned.globalObject = new HashMap<String, Object>(this.globalObject);
 		cloned.globalLog = new HashMap<String, Object>(this.globalLog);
-		cloned.preFilter = this.preFilter;
+		cloned.preFilter = this;
 		return cloned;
 	}
 	

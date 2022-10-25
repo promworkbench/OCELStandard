@@ -27,6 +27,6 @@ public class FilterOnObjectTypesList {
 		wizStepList.add(wizStep);
 		ListWizard<FilterOtListWizardParameters> listWizard = new ListWizard<>(wizStepList);
 		FilterOtListWizardParameters parameters = ProMWizardDisplay.show(context, listWizard, new FilterOtListWizardParameters());
-		return FilterOnObjectTypes.filterOnProvidedTextInput(ocel, parameters.getObjTypesList());
+		return FilterOnObjectTypes.filterOnProvidedTextInput(ocel.preFilter, parameters.getObjTypesList());
 	}
 }
