@@ -21,6 +21,9 @@ import org.processmining.ocel.ocelobjects.OcelEvent;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 import org.processmining.ocel.ocelobjects.OcelObject;
 import org.processmining.ocel.ocelobjects.OcelObjectType;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 
 @Plugin(name = "Import OCEL from JSON", parameterLabels = { "Filename" }, returnLabels = {
 "Object-Centric Event Log" }, returnTypes = { OcelEventLog.class })
@@ -114,12 +117,26 @@ public class JSONImporter extends AbstractImportPlugin {
 			OcelEvent event = new OcelEvent(eventLog);
 			event.id = eventId;
 			event.activity = jsonEvent.getString("ocel:activity");
-			try {
-				event.timestamp = Date.from( Instant.parse( jsonEvent.getString("ocel:timestamp")));
+			String timestampStr = jsonEvent.getString("ocel:timestamp");
+			timestampStr = timestampStr.replaceAll(" ", "T");
+
+			DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+
+			TemporalAccessor temporalAccessor = formatter.parseBest(
+			    timestampStr, 
+			    OffsetDateTime::from, 
+			    LocalDateTime::from
+			);
+
+			Instant instant;
+			if (temporalAccessor instanceof OffsetDateTime) {
+			    instant = ((OffsetDateTime) temporalAccessor).toInstant();
+			} else {
+			    instant = ((LocalDateTime) temporalAccessor).atZone(ZoneOffset.UTC).toInstant();
 			}
-			catch (Exception ex) {
-				event.timestamp = Date.from( Instant.parse( jsonEvent.getString("ocel:timestamp") + "Z" ));
-			}
+
+			event.timestamp = Date.from(instant);
+			
 			JSONArray jsonRelatedObjects = jsonEvent.getJSONArray("ocel:omap");
 			int i = 0;
 			while (i < jsonRelatedObjects.length()) {
