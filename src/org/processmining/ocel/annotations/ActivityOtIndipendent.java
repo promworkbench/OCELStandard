@@ -40,7 +40,7 @@ public class ActivityOtIndipendent {
 		for (String eve : ocel.events.keySet()) {
 			OcelEvent event = ocel.events.get(eve);
 			if (event.activity.equals(activity)) {
-				for (OcelObject obj : event.relatedObjects) {
+				for (OcelObject obj : event.relatedObjects.keySet()) {
 					relatedObjects.add(obj);
 				}
 			}
@@ -53,7 +53,7 @@ public class ActivityOtIndipendent {
 		for (String eve : ocel.events.keySet()) {
 			OcelEvent event = ocel.events.get(eve);
 			if (event.activity.equals(activity)) {
-				for (OcelObject obj : event.relatedObjects) {
+				for (OcelObject obj : event.relatedObjects.keySet()) {
 					this.numTotalObjects++;
 				}
 			}

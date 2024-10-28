@@ -11,7 +11,7 @@ public class FilterOnRelatedObjects {
 		OcelEventLog filtered = original.cloneEmpty();
 		for (OcelEvent ev : original.events.values()) {
 			boolean is_ok = false;
-			for (OcelObject obj : ev.relatedObjects) {
+			for (OcelObject obj : ev.relatedObjects.keySet()) {
 				if (objects.contains(obj)) {
 					is_ok = true;
 					break;

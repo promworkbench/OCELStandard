@@ -198,7 +198,7 @@ public class XMLExporter {
 			eventActivity.setAttribute("value", ocelEvent.activity);
 			eventTimestamp.setAttribute("value", ocelEvent.timestamp.toInstant().toString());
 			
-			for (OcelObject relObj : ocelEvent.relatedObjects) {
+			for (OcelObject relObj : ocelEvent.relatedObjects.keySet()) {
 				Element xmlObj = new Element("string");
 				xmlObj.setAttribute("key", "object-id");
 				xmlObj.setAttribute("value", relObj.id);

@@ -12,13 +12,13 @@ public class FilterNotRelatedObjects {
 		for (OcelEvent ev : original.events.values()) {
 			boolean is_ok1 = false;
 			boolean is_ok2 = true;
-			for (OcelObject obj : ev.relatedObjects) {
+			for (OcelObject obj : ev.relatedObjects.keySet()) {
 				if (positive.contains(obj)) {
 					is_ok1 = true;
 					break;
 				}
 			}
-			for (OcelObject obj : ev.relatedObjects) {
+			for (OcelObject obj : ev.relatedObjects.keySet()) {
 				if (negative.contains(obj)) {
 					is_ok2 = false;
 					break;

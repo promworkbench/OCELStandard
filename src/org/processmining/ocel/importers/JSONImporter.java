@@ -140,7 +140,7 @@ public class JSONImporter extends AbstractImportPlugin {
 			JSONArray jsonRelatedObjects = jsonEvent.getJSONArray("ocel:omap");
 			int i = 0;
 			while (i < jsonRelatedObjects.length()) {
-				event.relatedObjectsIdentifiers.add(jsonRelatedObjects.getString(i));
+				event.relatedObjectsIdentifiers.put(jsonRelatedObjects.getString(i), "");
 				i++;
 			}
 			JSONObject jsonVmap = jsonEvent.getJSONObject("ocel:vmap");

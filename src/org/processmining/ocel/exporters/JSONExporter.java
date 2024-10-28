@@ -144,7 +144,7 @@ public class JSONExporter {
 			jsonEvent.put("ocel:activity", event.activity);
 			jsonEvent.put("ocel:timestamp", event.timestamp.toInstant().toString());
 			JSONArray omap = new JSONArray();
-			for (OcelObject obj : event.relatedObjects) {
+			for (OcelObject obj : event.relatedObjects.keySet()) {
 				omap.put(obj.id);
 			}
 			JSONObject vmap = new JSONObject();

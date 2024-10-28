@@ -30,8 +30,8 @@ public class Converter {
 				eve.id = String.format("%d", eventCount);
 				eve.activity = activity.getValue();
 				eve.timestamp = timestamp.getValue();
-				eve.relatedObjectsIdentifiers.add(thisCase.id);
-				eve.relatedObjects.add(thisCase);
+				eve.relatedObjectsIdentifiers.put(thisCase.id, "");
+				eve.relatedObjects.put(thisCase, "");
 				thisCase.relatedEvents.add(eve);
 				converted.events.put(eve.id, eve);
 				eventCount++;

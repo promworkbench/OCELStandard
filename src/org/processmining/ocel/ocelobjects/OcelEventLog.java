@@ -48,10 +48,10 @@ public class OcelEventLog {
 	
 	public void cloneEvent(OcelEvent event) {
 		OcelEvent newEvent = event.clone();
-		for (OcelObject obj : event.relatedObjects) {
+		for (OcelObject obj : event.relatedObjects.keySet()) {
 			OcelObject newObj = cloneObject(obj);
-			newEvent.relatedObjects.add(newObj);
-			newEvent.relatedObjectsIdentifiers.add(newObj.id);
+			newEvent.relatedObjects.put(newObj, event.relatedObjects.get(obj));
+			newEvent.relatedObjectsIdentifiers.put(newObj.id, event.relatedObjects.get(obj));
 			newObj.relatedEvents.add(newEvent);
 		}
 		this.events.put(newEvent.id, newEvent);
@@ -59,12 +59,12 @@ public class OcelEventLog {
 	
 	public void cloneEvent(OcelEvent event, Set<String> allowedObjectTypes) {
 		OcelEvent newEvent = event.clone();
-		for (OcelObject obj : event.relatedObjects) {
+		for (OcelObject obj : event.relatedObjects.keySet()) {
 			String thisType = obj.objectType.name;
 			if (allowedObjectTypes.contains(thisType)) {
 				OcelObject newObj = cloneObject(obj);
-				newEvent.relatedObjects.add(newObj);
-				newEvent.relatedObjectsIdentifiers.add(newObj.id);
+				newEvent.relatedObjects.put(newObj, event.relatedObjects.get(obj));
+				newEvent.relatedObjectsIdentifiers.put(newObj.id, event.relatedObjects.get(obj));
 				newObj.relatedEvents.add(newEvent);
 			}
 		}

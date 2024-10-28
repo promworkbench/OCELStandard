@@ -13,7 +13,7 @@ public class FilterNumberRelatedObjectsType {
 		OcelEventLog filtered = original.cloneEmpty();
 		for (OcelEvent event : original.events.values()) {
 			Set<OcelObject> relatedObjectsType = new HashSet<OcelObject>();
-			for (OcelObject obj : event.relatedObjects) {
+			for (OcelObject obj : event.relatedObjects.keySet()) {
 				if (obj.objectType.equals(objectType)) {
 					relatedObjectsType.add(obj);
 				}

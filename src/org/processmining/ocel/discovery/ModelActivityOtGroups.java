@@ -26,7 +26,7 @@ public class ModelActivityOtGroups {
 			if (!this.activityOtGroups.containsKey(activity)) {
 				this.activityOtGroups.put(activity, new HashSet<String>());
 			}
-			for (OcelObject obj : event.relatedObjects) {
+			for (OcelObject obj : event.relatedObjects.keySet()) {
 				String otName = obj.objectType.name;
 				activityOtGroups.get(activity).add(otName);
 			}

@@ -40,7 +40,7 @@ public class FilterActOtList {
 	public static Map<String, Map<String, Integer>> getActOtStatistics(OcelEventLog ocel) {
 		Map<String, Map<String, Integer>> ret = new HashMap<String, Map<String, Integer>>();
 		for (OcelEvent eve : ocel.events.values()) {
-			for (OcelObject obj : eve.relatedObjects) {
+			for (OcelObject obj : eve.relatedObjects.keySet()) {
 				String otype = obj.objectType.name;
 				if (!(ret.containsKey(otype))) {
 					ret.put(otype, new HashMap<String, Integer>());

@@ -11,21 +11,21 @@ public class OcelEvent {
 	public String id;
 	public String activity;
 	public Date timestamp;
-	public Set<String> relatedObjectsIdentifiers;
-	public Set<OcelObject> relatedObjects;
+	public Map<String, String> relatedObjectsIdentifiers;
+	public Map<OcelObject, String> relatedObjects;
 	public Map<String, Object> attributes;
 	
 	public OcelEvent(OcelEventLog eventLog) {
 		this.eventLog = eventLog;
-		this.relatedObjectsIdentifiers = new HashSet<String>();
-		this.relatedObjects = new HashSet<OcelObject>();
+		this.relatedObjectsIdentifiers = new HashMap<String, String>();
+		this.relatedObjects = new HashMap<OcelObject, String>();
 		this.attributes = new HashMap<String, Object>();
 	}
 	
 	public void register() {
-		for (String reObj : relatedObjectsIdentifiers) {
+		for (String reObj : relatedObjectsIdentifiers.keySet()) {
 			OcelObject obj = this.eventLog.objects.get(reObj);
-			this.relatedObjects.add(obj);
+			this.relatedObjects.put(obj, relatedObjectsIdentifiers.get(reObj));
 			obj.relatedEvents.add(this);
 		}
 		for (String att : attributes.keySet()) {

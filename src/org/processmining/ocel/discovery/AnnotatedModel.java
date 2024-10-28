@@ -119,8 +119,8 @@ public class AnnotatedModel {
 				if (this.ocel.events.containsKey(events[0]) && this.ocel.events.containsKey(events[1])) {
 					OcelEvent eve1 = this.ocel.events.get(events[0]);
 					OcelEvent eve2 = this.ocel.events.get(events[1]);
-					for (OcelObject obj : eve1.relatedObjects) {
-						if (eve2.relatedObjects.contains(obj)) {
+					for (OcelObject obj : eve1.relatedObjects.keySet()) {
+						if (eve2.relatedObjects.containsKey(obj)) {
 							relatedObjects.add(obj);
 						}
 					}
@@ -142,7 +142,7 @@ public class AnnotatedModel {
 		Set<OcelObject> relatedObjects = new HashSet<OcelObject>();
 		for (OcelEvent eve : this.ocel.events.values()) {
 			if (eve.activity.equals(activity)) {
-				for (OcelObject obj : eve.relatedObjects) {
+				for (OcelObject obj : eve.relatedObjects.keySet()) {
 					relatedObjects.add(obj);
 				}
 			}
@@ -154,7 +154,7 @@ public class AnnotatedModel {
 		Set<OcelObject> allObjects = new HashSet<OcelObject>();
 		Set<OcelObject> relatedObjects = new HashSet<OcelObject>();
 		for (OcelEvent eve : this.ocel.events.values()) {
-			for (OcelObject obj : eve.relatedObjects) {
+			for (OcelObject obj : eve.relatedObjects.keySet()) {
 				if (obj.objectType.equals(ot)) {
 					allObjects.add(obj);
 					if (eve.activity.equals(activity)) {
@@ -229,7 +229,7 @@ public class AnnotatedModel {
 		Set<OcelObject> consObjects = new HashSet<OcelObject>();
 		for (OcelEvent eve : this.ocel.events.values()) {
 			if (eve.activity.equals(activity)) {
-				for (OcelObject obj : eve.relatedObjects) {
+				for (OcelObject obj : eve.relatedObjects.keySet()) {
 					if (obj.objectType.equals(objectType)) {
 						consObjects.add(obj);
 					}

@@ -73,7 +73,7 @@ public class OCELExporterCSV {
 			for (String objType : objectTypes) {
 				row.append(sep);
 				List<String> relObjs = new ArrayList<String>();
-				for (OcelObject obj : eve.relatedObjects) {
+				for (OcelObject obj : eve.relatedObjects.keySet()) {
 					if (obj.objectType.name.equals(objType)) {
 						relObjs.add(obj.id);
 					}

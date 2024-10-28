@@ -42,9 +42,9 @@ public class EdgesMeasures {
 			String[] evs = rea.split(Separator.SEPARATOR);
 			OcelEvent eve1 = ocel.events.get(evs[0]);
 			OcelEvent eve2 = ocel.events.get(evs[1]);
-			Set<OcelObject> r1 = new HashSet<OcelObject>(eve1.relatedObjects);
-			Set<OcelObject> r11 = new HashSet<OcelObject>(eve1.relatedObjects);
-			Set<OcelObject> r2 = new HashSet<OcelObject>(eve2.relatedObjects);
+			Set<OcelObject> r1 = new HashSet<OcelObject>(eve1.relatedObjects.keySet());
+			Set<OcelObject> r11 = new HashSet<OcelObject>(eve1.relatedObjects.keySet());
+			Set<OcelObject> r2 = new HashSet<OcelObject>(eve2.relatedObjects.keySet());
 			r11.removeAll(r2);
 			r1.removeAll(r11);
 			edgeObjects.addAll(r1);
@@ -58,9 +58,9 @@ public class EdgesMeasures {
 			String[] evs = rea.split(Separator.SEPARATOR);
 			OcelEvent eve1 = ocel.events.get(evs[0]);
 			OcelEvent eve2 = ocel.events.get(evs[1]);
-			Set<OcelObject> r1 = new HashSet<OcelObject>(eve1.relatedObjects);
-			Set<OcelObject> r11 = new HashSet<OcelObject>(eve1.relatedObjects);
-			Set<OcelObject> r2 = new HashSet<OcelObject>(eve2.relatedObjects);
+			Set<OcelObject> r1 = new HashSet<OcelObject>(eve1.relatedObjects.keySet());
+			Set<OcelObject> r11 = new HashSet<OcelObject>(eve1.relatedObjects.keySet());
+			Set<OcelObject> r2 = new HashSet<OcelObject>(eve2.relatedObjects.keySet());
 			r11.removeAll(r2);
 			r1.removeAll(r11);
 			this.totalObjects += r1.size();

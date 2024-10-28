@@ -43,7 +43,7 @@ public class EventsList {
 		for (OcelEvent eve : model.ocel.events.values()) {
 			ret.append("<tr><td>"+eve.id+"</td><td>"+eve.activity+"</td><td>"+eve.timestamp.toString()+"</td>");
 			Map<String, Set<String>> objects = new HashMap<String, Set<String>>();
-			for (OcelObject obj : eve.relatedObjects) {
+			for (OcelObject obj : eve.relatedObjects.keySet()) {
 				String otype = obj.objectType.name;
 				if (!(objects.containsKey(otype))) {
 					objects.put(otype, new HashSet<String>());

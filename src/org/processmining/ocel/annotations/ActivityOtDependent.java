@@ -36,7 +36,7 @@ public class ActivityOtDependent {
 		for (String eve : ocel.events.keySet()) {
 			OcelEvent event = ocel.events.get(eve);
 			if (event.activity.equals(activity)) {
-				for (OcelObject obj : event.relatedObjects) {
+				for (OcelObject obj : event.relatedObjects.keySet()) {
 					if (obj.objectType.equals(objectType)) {
 						this.numEvents++;
 						break;
@@ -51,7 +51,7 @@ public class ActivityOtDependent {
 		for (String eve : ocel.events.keySet()) {
 			OcelEvent event = ocel.events.get(eve);
 			if (event.activity.equals(activity)) {
-				for (OcelObject obj : event.relatedObjects) {
+				for (OcelObject obj : event.relatedObjects.keySet()) {
 					if (obj.objectType.equals(objectType)) {
 						relatedObjects.add(obj);
 					}
@@ -66,7 +66,7 @@ public class ActivityOtDependent {
 		for (String eve : ocel.events.keySet()) {
 			OcelEvent event = ocel.events.get(eve);
 			if (event.activity.equals(activity)) {
-				for (OcelObject obj : event.relatedObjects) {
+				for (OcelObject obj : event.relatedObjects.keySet()) {
 					if (obj.objectType.equals(objectType)) {
 						this.numTotalObjects++;
 					}
@@ -82,7 +82,7 @@ public class ActivityOtDependent {
 		for (String eve : ocel.events.keySet()) {
 			OcelEvent event = ocel.events.get(eve);
 			int numRelatedObjectsOt = 0;
-			for (OcelObject obj : event.relatedObjects) {
+			for (OcelObject obj : event.relatedObjects.keySet()) {
 				if (obj.objectType.equals(objectType)) {
 					numRelatedObjectsOt++;
 				}

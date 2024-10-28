@@ -147,8 +147,8 @@ public class OCELConverter {
 							else {
 								objObj = ocel.objects.get(obj);
 							}
-							eve.relatedObjects.add(objObj);
-							eve.relatedObjectsIdentifiers.add(obj);
+							eve.relatedObjects.put(objObj, "");
+							eve.relatedObjectsIdentifiers.put(obj, "");
 						}
 					}
 				}

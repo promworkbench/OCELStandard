@@ -239,7 +239,7 @@ public class XMLImporter extends AbstractImportPlugin {
 					List<Element> relatedObjects = property.getChildren();
 					for (Element relatedObject : relatedObjects) {
 						String value = relatedObject.getAttributeValue("value");
-						event.relatedObjectsIdentifiers.add(value);
+						event.relatedObjectsIdentifiers.put(value, "");
 					}
 				}
 				else if (key.equals("vmap")) {
