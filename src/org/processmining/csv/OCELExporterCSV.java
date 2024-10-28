@@ -17,9 +17,9 @@ import org.processmining.ocel.ocelobjects.OcelEvent;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 import org.processmining.ocel.ocelobjects.OcelObject;
 
-@Plugin(name = "Export OCEL to CSV file", parameterLabels = { "OcelEventLog", "File" }, returnLabels = { }, returnTypes = {})
 @UIExportPlugin(description = "Export OCEL to CSV file", extension = "csvocel")
 public class OCELExporterCSV {
+	@Plugin(name = "Export OCEL to CSV file", parameterLabels = { "OcelEventLog", "File" }, returnLabels = { }, returnTypes = {})
 	@PluginVariant(variantLabel = "Export OCEL to CSV file", requiredParameterLabels = { 0, 1 })
 	public void exportFromProm(PluginContext context, OcelEventLog eventLog, File file) {
 		String csvContent = OCELExporterCSV.exportCsv(eventLog, "\r\n", ',', '\"');

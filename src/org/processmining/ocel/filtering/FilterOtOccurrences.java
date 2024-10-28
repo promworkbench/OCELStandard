@@ -12,13 +12,13 @@ import org.processmining.framework.util.ui.wizard.ProMWizardDisplay;
 import org.processmining.framework.util.ui.wizard.ProMWizardStep;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 
-@Plugin(name = "Filter OCEL on object types' objects",
-returnLabels = { "Object-Centric Event Log" },
-returnTypes = { OcelEventLog.class },
-parameterLabels = { "Object-Centric Event Log" },
-help = "Object-Centric Event Log",
-userAccessible = true)
 public class FilterOtOccurrences {
+	@Plugin(name = "Filter OCEL on object types' objects",
+			returnLabels = { "Object-Centric Event Log" },
+			returnTypes = { OcelEventLog.class },
+			parameterLabels = { "Object-Centric Event Log" },
+			help = "Object-Centric Event Log",
+			userAccessible = true)
 	@PluginVariant(requiredParameterLabels = {0})
 	@UITopiaVariant(affiliation = "PADS RWTH", author = "Alessandro Berti", email = "a.berti@pads.rwth-aachen.de")
 	public static OcelEventLog applyPlugin(UIPluginContext context, OcelEventLog ocel) {
