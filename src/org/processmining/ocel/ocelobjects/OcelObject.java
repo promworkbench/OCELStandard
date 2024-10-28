@@ -15,12 +15,14 @@ public class OcelObject {
 	public Set<OcelEvent> relatedEvents;
 	public List<OcelEvent> sortedRelatedEvents;
 	public Map<String, Object> attributes;
+	public Map<OcelObject, String> relatedObjects;
 	
 	public OcelObject(OcelEventLog eventLog) {
 		this.eventLog = eventLog;
 		this.relatedEvents = new HashSet<OcelEvent>();
 		this.attributes = new HashMap<String, Object>();
 		this.sortedRelatedEvents = new ArrayList<OcelEvent>();
+		this.relatedObjects = new HashMap<OcelObject, String>();
 	}
 	
 	public void register() {
