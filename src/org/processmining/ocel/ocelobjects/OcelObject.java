@@ -2,6 +2,7 @@ package org.processmining.ocel.ocelobjects;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,15 +15,21 @@ public class OcelObject {
 	public OcelObjectType objectType;
 	public Set<OcelEvent> relatedEvents;
 	public List<OcelEvent> sortedRelatedEvents;
+	public Map<String, String> relatedObjectIdentifiers;
+	
+	// contains the first values of the object attribute values.
 	public Map<String, Object> attributes;
-	public Map<OcelObject, String> relatedObjects;
+	// contains the evolution of the object attribute values
+	// except the first value that is reported in the "attributes" map.
+	public Map<String, Map<Date, Object>> timedAttributes;
 	
 	public OcelObject(OcelEventLog eventLog) {
 		this.eventLog = eventLog;
 		this.relatedEvents = new HashSet<OcelEvent>();
 		this.attributes = new HashMap<String, Object>();
 		this.sortedRelatedEvents = new ArrayList<OcelEvent>();
-		this.relatedObjects = new HashMap<OcelObject, String>();
+		this.relatedObjectIdentifiers = new HashMap<String, String>();
+		this.timedAttributes = new HashMap<String, Map<Date, Object>>();
 	}
 	
 	public void register() {
