@@ -25,8 +25,10 @@ public class OcelEvent {
 	public void register() {
 		for (String reObj : relatedObjectsIdentifiers.keySet()) {
 			OcelObject obj = this.eventLog.objects.get(reObj);
-			this.relatedObjects.put(obj, relatedObjectsIdentifiers.get(reObj));
-			obj.relatedEvents.add(this);
+			if (obj != null) {
+				this.relatedObjects.put(obj, relatedObjectsIdentifiers.get(reObj));
+				obj.relatedEvents.add(this);
+			}
 		}
 		for (String att : attributes.keySet()) {
 			((Set<String>)this.eventLog.globalLog.get("ocel:attribute-names")).add(att);
