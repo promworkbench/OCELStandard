@@ -22,7 +22,7 @@ public class OCEL2JSONExporter {
         // Configure the mapper for pretty printing and date formatting
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX"));
+        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"));
 
         try {
             // Create a map to hold the top-level structure
@@ -154,7 +154,7 @@ public class OCEL2JSONExporter {
 
     private String formatTime(Date date) {
         // Format the date in ISO 8601 format
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
         return sdf.format(date);
     }
 }

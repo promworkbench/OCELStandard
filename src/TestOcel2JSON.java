@@ -11,8 +11,8 @@ import org.processmining.ocel.importers.OCEL2JSONImporter;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 
 public class TestOcel2JSON {
-	public static void main(String[] args) throws Exception {
-		File file = new File("C:\\ocel20_example.jsonocel");
+	public static void importExport(String inputPath, String outputPath) {
+		File file = new File(inputPath);
 		InputStream is0 = null;
 		try {
 			is0 = new FileInputStream(file);
@@ -27,12 +27,19 @@ public class TestOcel2JSON {
 		OCEL2JSONExporter exporter = new OCEL2JSONExporter(ocel);
 
 		// Export to a file output stream
-		try (OutputStream outputStream = new FileOutputStream("C:\\Users\\berti\\output_ocel.json")) {
+		try (OutputStream outputStream = new FileOutputStream(outputPath)) {
 		    exporter.exportLogToStream(outputStream);
 		} catch (IOException e) {
 		    e.printStackTrace();
 		}
 		
 		System.out.println("ciao2");
+		
+	}
+	
+	public static void main(String[] args) throws Exception {
+		importExport("C:\\ocel20_example.jsonocel", "C:\\Users\\berti\\output_ocel.json");
+	
+		importExport("C:\\Users\\berti\\output_ocel.json", "C:\\Users\\berti\\output_ocel2.json");
 	}
 }
