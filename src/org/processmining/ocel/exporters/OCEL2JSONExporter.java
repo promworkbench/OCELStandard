@@ -3,19 +3,46 @@ package org.processmining.ocel.exporters;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
+import org.processmining.contexts.uitopia.annotations.UIExportPlugin;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.annotations.Plugin;
+import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.ocel.ocelobjects.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@Plugin(name = "Export OCEL 2.0 to JSON file", parameterLabels = { "OcelEventLog", "File" }, returnLabels = { }, returnTypes = {})
+@UIExportPlugin(description = "Export OCEL 2.0 to JSON file", extension = "json")
 public class OCEL2JSONExporter {
-    private final OcelEventLog eventLog;
+    public OcelEventLog eventLog;
+    
+    public OCEL2JSONExporter() {
+    	
+    }
 
     public OCEL2JSONExporter(OcelEventLog eventLog) {
         this.eventLog = eventLog;
     }
+    
+	@PluginVariant(variantLabel = "Export OCEL 2.0 to JSON file", requiredParameterLabels = { 0, 1 })
+	public void exportFromProm(PluginContext context, OcelEventLog eventLog, File file) {
+		this.eventLog = eventLog;
+		OutputStream os = null;
+		try {
+			os = new FileOutputStream(file);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		exportLogToStream(os);
+	}
 
     public void exportLogToStream(OutputStream output0) {
         ObjectMapper mapper = new ObjectMapper();

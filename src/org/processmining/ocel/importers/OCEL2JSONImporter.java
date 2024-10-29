@@ -2,6 +2,11 @@ package org.processmining.ocel.importers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.processmining.contexts.uitopia.annotations.UIImportPlugin;
+import org.processmining.framework.abstractplugins.AbstractImportPlugin;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.ocel.ocelobjects.*;
 
 import java.io.InputStream;
@@ -9,7 +14,15 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
-public class OCEL2JSONImporter {
+@Plugin(name = "Import OCEL 2.0 from JSON", parameterLabels = { "Filename" }, returnLabels = {
+"Object-Centric Event Log" }, returnTypes = { OcelEventLog.class })
+@UIImportPlugin(description = "Import OCEL 2.0 from JSON", extensions = { "jsonocel", "json" })
+public class OCEL2JSONImporter extends AbstractImportPlugin {
+	protected OcelEventLog importFromStream(PluginContext context, InputStream input, String filename, long fileSizeInBytes)
+			throws Exception {
+		return doImportFromStream(input);
+	}
+	
     public OcelEventLog doImportFromStream(InputStream is0) {
         OcelEventLog eventLog = new OcelEventLog();
         ObjectMapper mapper = new ObjectMapper();

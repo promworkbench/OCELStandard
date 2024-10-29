@@ -1,5 +1,9 @@
 package org.processmining.ocel.exporters;
 
+import org.processmining.contexts.uitopia.annotations.UIExportPlugin;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.annotations.Plugin;
+import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.ocel.ocelobjects.OcelEvent;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 import org.processmining.ocel.ocelobjects.OcelObject;
@@ -13,17 +17,39 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@Plugin(name = "Export OCEL 2.0 to XML file", parameterLabels = { "OcelEventLog", "File" }, returnLabels = { }, returnTypes = {})
+@UIExportPlugin(description = "Export OCEL 2.0 to XML file", extension = "xml")
 public class OCEL2XMLExporter {
 
-    private OcelEventLog eventLog;
+    public OcelEventLog eventLog;
+    
+    public OCEL2XMLExporter() {
+    	
+    }
 
     public OCEL2XMLExporter(OcelEventLog eventLog) {
         this.eventLog = eventLog;
     }
+    
+	@PluginVariant(variantLabel = "Export OCEL 2.0 to XML file", requiredParameterLabels = { 0, 1 })
+	public void exportFromProm(PluginContext context, OcelEventLog eventLog, File file) {
+		this.eventLog = eventLog;
+		OutputStream os = null;
+		try {
+			os = new FileOutputStream(file);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		exportLogToStream(os);
+	}
 
     public void exportLogToStream(OutputStream output0) {
         try {

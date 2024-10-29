@@ -1,5 +1,9 @@
 package org.processmining.ocel.importers;
 
+import org.processmining.contexts.uitopia.annotations.UIImportPlugin;
+import org.processmining.framework.abstractplugins.AbstractImportPlugin;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.ocel.ocelobjects.OcelEvent;
 import org.processmining.ocel.ocelobjects.OcelEventLog;
 import org.processmining.ocel.ocelobjects.OcelObject;
@@ -14,8 +18,15 @@ import javax.xml.parsers.*;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-public class OCEL2XMLImporter {
-
+@Plugin(name = "Import OCEL 2.0 from XML", parameterLabels = { "Filename" }, returnLabels = {
+"Object-Centric Event Log" }, returnTypes = { OcelEventLog.class })
+@UIImportPlugin(description = "Import OCEL 2.0 from XML", extensions = { "xmlocel", "xml", "xml2" })
+public class OCEL2XMLImporter extends AbstractImportPlugin {
+	protected OcelEventLog importFromStream(PluginContext context, InputStream input, String filename, long fileSizeInBytes)
+			throws Exception {
+		return doImportFromStream(input);
+	}
+	
     public OcelEventLog doImportFromStream(InputStream is0) {
         OcelEventLog eventLog = new OcelEventLog();
 
