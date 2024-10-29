@@ -37,6 +37,8 @@ public class TestOCEL2XML {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		importExport("C:\\ocel20_example.xmlocel", "C:\\Users\\berti\\xmlocel1.xmlocel");
+		importExport("C:\\ContainerLogistics.xml", "C:\\Users\\berti\\xmlocel1.xmlocel");
+		
+		importExport("C:\\Users\\berti\\xmlocel1.xmlocel", "C:\\Users\\berti\\xmlocel2.xmlocel");
 	}
 }

@@ -179,19 +179,37 @@ public class OCEL2XMLImporter {
 
     private Date parseISODate(String dateStr) {
         try {
-        	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-            Date date = sdf.parse(dateStr);
-            return date;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+            return sdf.parse(dateStr);
         } catch (ParseException e) {
-        	try {
-        		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                Date date = sdf.parse(dateStr);
-                return date;
-        	}
-        	catch (ParseException e2) {
-        		e.printStackTrace();
-                return null;
-        	}
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                return sdf.parse(dateStr);
+            } catch (ParseException e2) {
+                try {
+                    // Remove parentheses and content within, if any
+                    int idx = dateStr.indexOf(" (");
+                    if (idx != -1) {
+                        dateStr = dateStr.substring(0, idx);
+                    }
+                    // Replace 'GMT' with an empty string to correctly parse the time zone offset
+                    if (dateStr.contains("GMT")) {
+                        dateStr = dateStr.replace("GMT", "").trim();
+                    }
+                    // Use the appropriate date pattern
+                    SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss Z", Locale.ENGLISH);
+                    return sdf.parse(dateStr);
+                } catch (ParseException e3) {
+                    try {
+                        // Additional attempt without modifying the date string
+                        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss z", Locale.ENGLISH);
+                        return sdf.parse(dateStr);
+                    } catch (ParseException e4) {
+                        e4.printStackTrace();
+                        return null;
+                    }
+                }
+            }
         }
     }
 

@@ -38,7 +38,7 @@ public class TestOcel2JSON {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		importExport("C:\\ocel20_example.jsonocel", "C:\\Users\\berti\\output_ocel.json");
+		importExport("C:\\ContainerLogistics.json", "C:\\Users\\berti\\output_ocel.json");
 	
 		importExport("C:\\Users\\berti\\output_ocel.json", "C:\\Users\\berti\\output_ocel2.json");
 	}
