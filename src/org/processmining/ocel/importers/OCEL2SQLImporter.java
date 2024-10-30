@@ -1,6 +1,10 @@
 package org.processmining.ocel.importers;
 
 
+import org.processmining.contexts.uitopia.annotations.UIImportPlugin;
+import org.processmining.framework.abstractplugins.AbstractImportPlugin;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.ocel.ocelobjects.*;
 import java.io.*;
 import java.nio.file.Files;
@@ -11,7 +15,15 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 
-public class OCEL2SQLImporter {
+@Plugin(name = "Import OCEL 2.0 from SQLite", parameterLabels = { "Filename" }, returnLabels = {
+"Object-Centric Event Log" }, returnTypes = { OcelEventLog.class })
+@UIImportPlugin(description = "Import OCEL 2.0 from SQLite", extensions = { "sqlite" })
+public class OCEL2SQLImporter extends AbstractImportPlugin {
+	protected OcelEventLog importFromStream(PluginContext context, InputStream input, String filename, long fileSizeInBytes)
+			throws Exception {
+		return doImportFromStream(input);
+	}
+	
     public OcelEventLog doImportFromStream(InputStream is0) throws Exception {
         // Write InputStream to a temporary file
         Path tempFile = Files.createTempFile("ocel_temp_db", ".sqlite");

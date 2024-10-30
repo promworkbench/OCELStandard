@@ -1,5 +1,9 @@
 package org.processmining.ocel.exporters;
 
+import org.processmining.contexts.uitopia.annotations.UIExportPlugin;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.annotations.Plugin;
+import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.ocel.ocelobjects.*;
 
 import java.io.*;
@@ -10,13 +14,32 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 
+@Plugin(name = "Export OCEL 2.0 to SQLite file (beta)", parameterLabels = { "OcelEventLog", "File" }, returnLabels = { }, returnTypes = {})
+@UIExportPlugin(description = "Export OCEL 2.0 to SQLite file (beta)", extension = "sqlite")
 public class OCEL2SQLiteExporter {
-    private OcelEventLog eventLog;
+    public OcelEventLog eventLog;
+    
+    public OCEL2SQLiteExporter() {
+    	
+    }
 
     public OCEL2SQLiteExporter(OcelEventLog eventLog) {
         this.eventLog = eventLog;
     }
 
+	@PluginVariant(variantLabel = "Export OCEL 2.0 to SQLite file", requiredParameterLabels = { 0, 1 })
+	public void exportFromProm(PluginContext context, OcelEventLog eventLog, File file) throws Exception {
+		this.eventLog = eventLog;
+		OutputStream os = null;
+		try {
+			os = new FileOutputStream(file);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		exportLogToStream(os);
+	}
+	
     public void exportLogToStream(OutputStream output0) throws Exception {
         // Create a temporary file for the SQLite database
         Path tempFile = Files.createTempFile("ocel_export_temp_db", ".sqlite");
@@ -305,25 +328,21 @@ public class OCEL2SQLiteExporter {
             }
         }
 
-        // Insert into object_object table
-        // If you have object-object relationships, insert them here
-        // For now, assuming that the OcelObject class has a Map<OcelObject, String> relatedObjects
-
-        /*
         for (OcelObject object : eventLog.objects.values()) {
-            for (Map.Entry<OcelObject, String> entry : object.relatedObjects.entrySet()) {
-                OcelObject targetObject = entry.getKey();
-                String qualifier = entry.getValue();
-                String insertObjectObject = "INSERT INTO object_object (ocel_source_id, ocel_target_id, ocel_qualifier) VALUES (?, ?, ?)";
-                try (PreparedStatement pstmt = conn.prepareStatement(insertObjectObject)) {
-                    pstmt.setString(1, object.id);
-                    pstmt.setString(2, targetObject.id);
-                    pstmt.setString(3, qualifier);
-                    pstmt.executeUpdate();
+            for (Map.Entry<String, String> entry : object.relatedObjectIdentifiers.entrySet()) {
+                OcelObject targetObject = eventLog.objects.get(entry.getKey());
+                if (targetObject != null) {
+	                String qualifier = entry.getValue();
+	                String insertObjectObject = "INSERT INTO object_object (ocel_source_id, ocel_target_id, ocel_qualifier) VALUES (?, ?, ?)";
+	                try (PreparedStatement pstmt = conn.prepareStatement(insertObjectObject)) {
+	                    pstmt.setString(1, object.id);
+	                    pstmt.setString(2, targetObject.id);
+	                    pstmt.setString(3, qualifier);
+	                    pstmt.executeUpdate();
+	                }
                 }
             }
         }
-        */
     }
 
     private String sanitizeName(String name) {

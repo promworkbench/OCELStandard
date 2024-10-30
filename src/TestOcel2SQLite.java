@@ -29,7 +29,7 @@ public class TestOcel2SQLite {
 		OCEL2XMLExporter xmlExporter = new OCEL2XMLExporter(ocel);
 		
 		try (OutputStream outputStream = new FileOutputStream(outputPath)) {
-			//xmlExporter.exportLogToStream(outputStream);
+			ocelExporter.exportLogToStream(outputStream);
 		} catch (IOException e) {
 		    e.printStackTrace();
 		}
@@ -38,8 +38,8 @@ public class TestOcel2SQLite {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		importExport("C:\\ContainerLogistics.sqlite", "C:\\Users\\berti\\ocel20_1.xml");
+		importExport("C:\\ocel20_example.sqlite", "C:\\Users\\berti\\ocel20_1.sqlite");
 		
-		//importExport("C:\\Users\\berti\\ocel20_1.sqlite", "C:\\Users\\berti\\ocel20_2.sqlite");
+		importExport("C:\\Users\\berti\\ocel20_1.sqlite", "C:\\Users\\berti\\ocel20_2.sqlite");
 	}
 }
