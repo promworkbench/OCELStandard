@@ -1,7 +1,10 @@
 package org.processmining.ocel.ocelobjects;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -116,4 +119,68 @@ public class OcelEventLog {
 	public Map<String, Object> getGlobalObject() {
 		return this.globalObject;
 	}
+	
+    public Map<String, Integer> computeSummaryStatistics() {
+        Map<String, Integer> summary = new HashMap<>();
+
+        // 1. Number of events
+        int numberOfEvents = this.events.size();
+        summary.put("numberOfEvents", numberOfEvents);
+
+        // 2. Number of objects
+        int numberOfObjects = this.objects.size();
+        summary.put("numberOfObjects", numberOfObjects);
+
+        // 3. Number of event-to-object relationships
+        int numberOfEventToObjectRelationships = 0;
+        for (OcelEvent event : this.events.values()) {
+            numberOfEventToObjectRelationships += event.relatedObjects.size();
+        }
+        summary.put("numberOfEventToObjectRelationships", numberOfEventToObjectRelationships);
+
+        // 4. Number of object-to-object relationships
+        Set<String> objectPairSet = new HashSet<>();
+        for (OcelEvent event : this.events.values()) {
+            List<String> objIds = new ArrayList<>(event.relatedObjectsIdentifiers.keySet());
+            for (int i = 0; i < objIds.size(); i++) {
+                for (int j = i + 1; j < objIds.size(); j++) {
+                    String objId1 = objIds.get(i);
+                    String objId2 = objIds.get(j);
+                    // Create a consistent representation for the pair
+                    String pairKey = objId1.compareTo(objId2) < 0 ?
+                            objId1 + "," + objId2 :
+                            objId2 + "," + objId1;
+                    objectPairSet.add(pairKey);
+                }
+            }
+        }
+        int numberOfObjectToObjectRelationships = objectPairSet.size();
+        summary.put("numberOfObjectToObjectRelationships", numberOfObjectToObjectRelationships);
+
+        // 5. Number of changes to the object attribute values
+        int numberOfObjectAttributeChanges = 0;
+        for (OcelObject object : this.objects.values()) {
+            for (Map<Date, Object> attributeChanges : object.timedAttributes.values()) {
+                numberOfObjectAttributeChanges += attributeChanges.size();
+            }
+        }
+        summary.put("numberOfObjectAttributeChanges", numberOfObjectAttributeChanges);
+
+        return summary;
+    }
+
+    /**
+     * Prints the summary statistics of the event log.
+     */
+    public void printSummaryStatistics() {
+        Map<String, Integer> summary = computeSummaryStatistics();
+
+        System.out.println("Summary Statistics:");
+        System.out.println("-------------------");
+        System.out.println("Number of Events: " + summary.get("numberOfEvents"));
+        System.out.println("Number of Objects: " + summary.get("numberOfObjects"));
+        System.out.println("Number of Event-to-Object Relationships: " + summary.get("numberOfEventToObjectRelationships"));
+        System.out.println("Number of Object-to-Object Relationships: " + summary.get("numberOfObjectToObjectRelationships"));
+        System.out.println("Number of Changes to Object Attribute Values: " + summary.get("numberOfObjectAttributeChanges"));
+    }
 }

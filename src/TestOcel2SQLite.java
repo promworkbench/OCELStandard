@@ -23,7 +23,7 @@ public class TestOcel2SQLite {
 		}
 		OCEL2SQLImporter ocelImporter = new OCEL2SQLImporter();
 		OcelEventLog ocel = ocelImporter.doImportFromStream(is0);
-		System.out.println("ciao!");
+		ocel.printSummaryStatistics();
 		
 		OCEL2SQLiteExporter ocelExporter = new OCEL2SQLiteExporter(ocel);
 		OCEL2XMLExporter xmlExporter = new OCEL2XMLExporter(ocel);
