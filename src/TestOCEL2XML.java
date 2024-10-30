@@ -24,6 +24,7 @@ public class TestOCEL2XML {
 		OcelEventLog ocel = ocelImporter.doImportFromStream(is0);
 		
 		System.out.println("ciao");
+		ocel.printSummaryStatistics();
 		
 		OCEL2XMLExporter ocelExporter = new OCEL2XMLExporter(ocel);
 		

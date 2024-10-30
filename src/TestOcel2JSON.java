@@ -23,6 +23,7 @@ public class TestOcel2JSON {
 		OCEL2JSONImporter importer = new OCEL2JSONImporter();
 		OcelEventLog ocel = importer.doImportFromStream(is0);
 		System.out.println("ciao");
+		ocel.printSummaryStatistics();
 		
 		OCEL2JSONExporter exporter = new OCEL2JSONExporter(ocel);
 
