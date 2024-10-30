@@ -139,22 +139,10 @@ public class OcelEventLog {
         summary.put("numberOfEventToObjectRelationships", numberOfEventToObjectRelationships);
 
         // 4. Number of object-to-object relationships
-        Set<String> objectPairSet = new HashSet<>();
-        for (OcelEvent event : this.events.values()) {
-            List<String> objIds = new ArrayList<>(event.relatedObjectsIdentifiers.keySet());
-            for (int i = 0; i < objIds.size(); i++) {
-                for (int j = i + 1; j < objIds.size(); j++) {
-                    String objId1 = objIds.get(i);
-                    String objId2 = objIds.get(j);
-                    // Create a consistent representation for the pair
-                    String pairKey = objId1.compareTo(objId2) < 0 ?
-                            objId1 + "," + objId2 :
-                            objId2 + "," + objId1;
-                    objectPairSet.add(pairKey);
-                }
-            }
+        int numberOfObjectToObjectRelationships = 0;
+        for (OcelObject object : this.objects.values()) {
+        	numberOfObjectToObjectRelationships += object.relatedObjectIdentifiers.size();
         }
-        int numberOfObjectToObjectRelationships = objectPairSet.size();
         summary.put("numberOfObjectToObjectRelationships", numberOfObjectToObjectRelationships);
 
         // 5. Number of changes to the object attribute values

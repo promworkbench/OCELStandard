@@ -151,11 +151,14 @@ public class OCEL2XMLExporter {
             for (String attrName : allAttributes.keySet()) {
                 TreeMap<Date, Object> timedValues = allAttributes.get(attrName);
                 for (Date time : timedValues.keySet()) {
-                    Element attributeElement = doc.createElement("attribute");
-                    attributeElement.setAttribute("name", attrName);
-                    attributeElement.setAttribute("time", formatISODate(time));
-                    attributeElement.setTextContent(timedValues.get(time).toString());
-                    attributesElement.appendChild(attributeElement);
+                    Object attvalue = timedValues.get(time);
+                    if (attvalue != null) {
+	                    Element attributeElement = doc.createElement("attribute");
+	                    attributeElement.setAttribute("name", attrName);
+	                    attributeElement.setAttribute("time", formatISODate(time));
+	                    attributeElement.setTextContent(timedValues.get(time).toString());
+	                    attributesElement.appendChild(attributeElement);
+                    }
                 }
             }
 
