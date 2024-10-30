@@ -236,11 +236,9 @@ public class OCEL2SQLImporter {
             String qualifier = rs.getString("ocel_qualifier");
             OcelObject sourceObject = objects.get(sourceId);
             OcelObject targetObject = objects.get(targetId);
-            // Implement the logic to handle object-object relationships
-            // For example, you might want to add the target object to a list in the source object
-            // This can be done by adding a new field in OcelObject to store related objects
-            // sourceObject.relatedObjects.put(targetObject, qualifier);
-            // For now, we will skip this part as it depends on your specific implementation needs
+            if (sourceObject != null && targetObject != null && qualifier != null) {
+            	sourceObject.relatedObjectIdentifiers.put(targetId, qualifier);
+            }
         }
         rs.close();
         stmt.close();
