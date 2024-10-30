@@ -38,7 +38,7 @@ public class TestOcel2SQLite {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		importExport("C:\\ocel20_example.sqlite", "C:\\Users\\berti\\ocel20_1.sqlite");
+		importExport("C:\\ContainerLogistics.sqlite", "C:\\Users\\berti\\ocel20_1.sqlite");
 		
 		importExport("C:\\Users\\berti\\ocel20_1.sqlite", "C:\\Users\\berti\\ocel20_2.sqlite");
 	}
